@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namra Shah</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#about" class="nav-link active" data-section="about">About Me</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#experience" class="nav-link" data-section="experience">Experience</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#projects" class="nav-link" data-section="projects">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link" data-section="contact">Contact Me</a>
+                </li>
+            </ul>
+            <div class="theme-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="theme-btn">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="nav-underline"></div>
+    </nav>
+
+    <main class="main-content">
+        <section id="about" class="section">
+            <div class="section-content">
+                <h1 class="section-title">About Me</h1>
+                <div class="typewriter-text">
+                    <p>Hello, I'm a passionate developer who loves creating meaningful solutions.</p>
+                    <p>I specialize in web development, problem-solving, and turning ideas into reality.</p>
+                    <p>When I'm not coding, you'll find me exploring new technologies and contributing to open source.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="section">
+            <div class="section-content">
+                <h2 class="section-title">Experience</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Senior Developer</h3>
+                            <p class="company">Tech Company Inc.</p>
+                            <p class="duration">2022 - Present</p>
+                            <p>Led development of multiple web applications and mentored junior developers.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Full Stack Developer</h3>
+                            <p class="company">Startup XYZ</p>
+                            <p class="duration">2020 - 2022</p>
+                            <p>Built scalable web applications using modern technologies and best practices.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Frontend Developer</h3>
+                            <p class="company">Digital Agency</p>
+                            <p class="duration">2018 - 2020</p>
+                            <p>Created responsive and accessible user interfaces for various clients.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section">
+            <div class="section-content">
+                <h2 class="section-title">Projects</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <h3>E-commerce Platform</h3>
+                        <p>A full-stack e-commerce solution with payment integration and admin dashboard.</p>
+                        <div class="project-tech">React, Node.js, MongoDB</div>
+                    </div>
+                    <div class="project-card">
+                        <h3>Task Management App</h3>
+                        <p>A collaborative task management application with real-time updates.</p>
+                        <div class="project-tech">Vue.js, Firebase, Tailwind CSS</div>
+                    </div>
+                    <div class="project-card">
+                        <h3>Weather Dashboard</h3>
+                        <p>A weather application with location-based forecasts and interactive maps.</p>
+                        <div class="project-tech">JavaScript, OpenWeather API, Leaflet</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="section-content">
+                <h2 class="section-title">Contact Me</h2>
+                <form class="contact-form" action="/api/contact" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
