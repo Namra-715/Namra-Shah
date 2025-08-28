@@ -103,8 +103,66 @@ window.addEventListener('scroll', () => {
     updateActiveSection();
 });
 
-// Initialize on page load
+// Initialize EmailJS
+(function() {
+    emailjs.init("5qJ-qZdE_OSefij_X"); // You'll add your EmailJS public key here
+})();
+
+// Handle contact form submission
 document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.getElementById('contact-form');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
+            
+            // Send email using EmailJS
+            emailjs.send('service_luvoo37', 'template_crw12yb', formData)
+                .then(function(response) {
+                    // Success
+                    submitBtn.textContent = 'Message Sent!';
+                    submitBtn.style.background = 'var(--text-primary)';
+                    submitBtn.style.color = 'var(--bg-primary)';
+                    
+                    // Reset form
+                    contactForm.reset();
+                    
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.style.background = 'transparent';
+                        submitBtn.style.color = 'var(--text-primary)';
+                        submitBtn.disabled = false;
+                    }, 3000);
+                }, function(error) {
+                    // Error
+                    submitBtn.textContent = 'Failed to Send';
+                    submitBtn.style.background = '#ff4444';
+                    
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.style.background = 'transparent';
+                        submitBtn.style.color = 'var(--text-primary)';
+                        submitBtn.disabled = false;
+                    }, 3000);
+                });
+        });
+    }
+    
     // Prevent scroll restoration on page reload
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
