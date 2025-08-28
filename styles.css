@@ -86,11 +86,22 @@ p {
     margin: 0 auto;
     padding: 1rem 2rem;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
 
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-image {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
 
 .nav-menu {
     display: flex;
