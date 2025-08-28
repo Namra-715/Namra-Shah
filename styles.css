@@ -38,7 +38,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 * {
@@ -177,7 +177,8 @@ input:checked + .slider:before {
 
 /* Main content and sections */
 .main-content {
-    margin-top: 80px;
+    margin-top: 0;
+    transition: background-color 0.2s ease;
 }
 
 .section {
@@ -189,11 +190,12 @@ input:checked + .slider:before {
     padding-top: 0.5rem;
     background-color: var(--section-bg);
     scroll-margin-top: 60px;
+    transition: background-color 0.2s ease;
 }
 
 #about.section {
     align-items: flex-start;
-    padding-top: 0.5rem;
+    padding-top: 120px;
 }
 
 #about .section-content {
@@ -201,7 +203,7 @@ input:checked + .slider:before {
 }
 
 #about h1 {
-    padding-top: 4rem;
+    padding-top: 0;
 }
 
 #contact.section {
