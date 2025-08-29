@@ -4,8 +4,8 @@ const body = document.body;
 let isDarkMode = true;
 
 // Photo system - two variables for photo addresses
-let darkThemePhoto = 'profile-dark.jpg';  // Photo shown in dark theme
-let lightThemePhoto = 'profile-light.jpg'; // Photo shown in light theme
+let darkThemePhoto = 'profile-dark.JPG';  // Photo shown in dark theme
+let lightThemePhoto = 'profile-light.JPG'; // Photo shown in light theme
 let scrollCounter = 1; // Start at 1 so first scroll down triggers flip
 
 // Check for saved theme preference or default to dark mode
@@ -405,8 +405,8 @@ function showLightModePhoto() {
 // Reset photo flip state when theme changes so scroll flipping works
 function resetPhotoFlipState() {
     // Reset photo addresses to their original state
-    darkThemePhoto = 'profile-dark.jpg';
-    lightThemePhoto = 'profile-light.jpg';
+    darkThemePhoto = 'profile-dark.JPG';
+    lightThemePhoto = 'profile-light.JPG';
     scrollCounter = 1; // Reset scroll counter to 1 so first scroll works
     
     // Update the actual image sources
