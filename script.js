@@ -38,8 +38,22 @@ function updateUnderline() {
         const rect = activeLink.getBoundingClientRect();
         const navRect = document.querySelector('.navbar').getBoundingClientRect();
         
-        navUnderline.style.width = `${rect.width}px`;
-        navUnderline.style.left = `${rect.left - navRect.left}px`;
+        // Check if we're on mobile (navbar is stacked vertically)
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // On mobile, position underline below the active link
+            navUnderline.style.width = `${rect.width}px`;
+            navUnderline.style.left = `${rect.left - navRect.left}px`;
+            navUnderline.style.top = `${rect.bottom - navRect.top + 5}px`; // Position below the link
+            navUnderline.style.bottom = 'auto';
+        } else {
+            // On desktop, position underline at the bottom of navbar
+            navUnderline.style.width = `${rect.width}px`;
+            navUnderline.style.left = `${rect.left - navRect.left}px`;
+            navUnderline.style.top = 'auto';
+            navUnderline.style.bottom = '0';
+        }
     }
 }
 
@@ -96,7 +110,16 @@ navLinks.forEach(link => {
 });
 
 // Update underline position on window resize
-window.addEventListener('resize', updateUnderline);
+window.addEventListener('resize', () => {
+    // Add a small delay to ensure layout has fully adjusted
+    setTimeout(updateUnderline, 100);
+});
+
+// Handle orientation change on mobile devices
+window.addEventListener('orientationchange', () => {
+    // Add a longer delay for orientation changes
+    setTimeout(updateUnderline, 300);
+});
 
 // Update active section and underline on scroll
 window.addEventListener('scroll', () => {
