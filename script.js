@@ -54,12 +54,29 @@ function updateUnderline() {
             navUnderline.style.top = 'auto';
             navUnderline.style.bottom = '0';
         }
+    } else {
+        // No active link (we're in hero section), hide the underline
+        navUnderline.style.width = '0';
     }
 }
 
 // Update active section based on scroll position
 function updateActiveSection() {
     const scrollPosition = window.scrollY + window.innerHeight / 2;
+    
+    // Check if we're in the hero section (before any navigation sections)
+    const heroSection = document.getElementById('hero');
+    if (heroSection) {
+        const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+        
+        if (scrollPosition < heroBottom) {
+            // We're in the hero section, remove active class from all links
+            navLinks.forEach(link => link.classList.remove('active'));
+            // Hide the underline
+            navUnderline.style.width = '0';
+            return;
+        }
+    }
     
     sections.forEach((section, index) => {
         const sectionTop = section.offsetTop;
@@ -79,6 +96,62 @@ function updateActiveSection() {
         }
     });
 }
+
+// No entrance animation needed - CSS handles it
+
+// Update hero section scroll animation
+function updateHeroScrollAnimation() {
+    const heroSection = document.getElementById('hero');
+    if (!heroSection) return;
+    
+    const scrollY = window.scrollY;
+    const heroHeight = heroSection.offsetHeight;
+    const heroTop = heroSection.offsetTop;
+    
+    // Calculate how far we've scrolled through the hero section (0 to 1)
+    const scrollProgress = Math.min(Math.max((scrollY - heroTop) / heroHeight, 0), 1);
+    
+    // Get the name elements
+    const firstName = document.querySelector('.first-name');
+    const lastName = document.querySelector('.last-name');
+    
+    if (firstName && lastName) {
+        // Check if initial entrance animation is complete (after 2.5 seconds total)
+        const timeSinceLoad = Date.now() - (window.pageLoadTime || Date.now());
+        const initialAnimationComplete = timeSinceLoad > 2500;
+        
+        // Debug logging
+        console.log('Scroll Y:', scrollY, 'Hero Top:', heroTop, 'Hero Height:', heroHeight, 'Scroll Progress:', scrollProgress, 'Time since load:', timeSinceLoad, 'Initial animation complete:', initialAnimationComplete);
+        
+        if (initialAnimationComplete) {
+            // Handle scroll-based exit animation
+            if (scrollProgress > 0) {
+                // Move first name further right (continuing its initial direction from left to center)
+                const firstNameTransform = scrollProgress * 100; // From 0 to 100vw (right)
+                firstName.style.setProperty('transform', `translateX(${firstNameTransform}vw)`, 'important');
+                
+                // Move last name further left (continuing its initial direction from right to center)
+                const lastNameTransform = -(scrollProgress * 100); // From 0 to -100vw (left)
+                lastName.style.setProperty('transform', `translateX(${lastNameTransform}vw)`, 'important');
+                
+                // Fade out opacity as we scroll
+                const opacity = 1 - scrollProgress;
+                firstName.style.setProperty('opacity', opacity, 'important');
+                lastName.style.setProperty('opacity', opacity, 'important');
+                
+                console.log('Moving names - First name transform:', firstNameTransform, 'Last name transform:', lastNameTransform, 'Opacity:', opacity);
+            } else {
+                // When back at the top, reset names to center position
+                firstName.style.setProperty('transform', 'translateX(0)', 'important');
+                lastName.style.setProperty('transform', 'translateX(0)', 'important');
+                firstName.style.setProperty('opacity', '1', 'important');
+                lastName.style.setProperty('opacity', '1', 'important');
+            }
+        }
+    }
+}
+
+
 
 // Smooth scrolling for navigation links
 navLinks.forEach(link => {
@@ -112,18 +185,26 @@ navLinks.forEach(link => {
 // Update underline position on window resize
 window.addEventListener('resize', () => {
     // Add a small delay to ensure layout has fully adjusted
-    setTimeout(updateUnderline, 100);
+    setTimeout(() => {
+        updateUnderline();
+        updateHeroScrollAnimation();
+    }, 100);
 });
 
 // Handle orientation change on mobile devices
 window.addEventListener('orientationchange', () => {
     // Add a longer delay for orientation changes
-    setTimeout(updateUnderline, 300);
+    setTimeout(() => {
+        updateUnderline();
+        updateHeroScrollAnimation();
+    }, 300);
 });
 
 // Update active section and underline on scroll
 window.addEventListener('scroll', () => {
+    console.log('Scroll event triggered!');
     updateActiveSection();
+    updateHeroScrollAnimation();
 });
 
 // Initialize EmailJS
@@ -133,6 +214,9 @@ window.addEventListener('scroll', () => {
 
 // Handle contact form submission
 document.addEventListener('DOMContentLoaded', () => {
+    // Set page load time for hero animation timing
+    window.pageLoadTime = Date.now();
+    
     const contactForm = document.getElementById('contact-form');
     
     if (contactForm) {
@@ -196,6 +280,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     updateActiveSection();
     updateUnderline();
+    console.log('Page loaded, calling updateHeroScrollAnimation');
+    updateHeroScrollAnimation();
 });
 
 // Add intersection observer for better performance

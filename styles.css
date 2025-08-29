@@ -176,6 +176,60 @@ input:checked + .slider:before {
     transform: translateX(20px);
 }
 
+/* Hero Section */
+.hero-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--section-bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content {
+    text-align: center;
+    z-index: 1;
+}
+
+.name-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.first-name {
+    font-size: 8rem;
+    font-weight: 100;
+    color: var(--text-primary);
+    transform: translateX(-100vw);
+    opacity: 0;
+    animation: slideInLeft 1.5s ease-out 0.5s forwards;
+}
+
+.last-name {
+    font-size: 8rem;
+    font-weight: 100;
+    color: var(--text-primary);
+    transform: translateX(100vw);
+    opacity: 0;
+    animation: slideInRight 1.5s ease-out 1s forwards;
+}
+
+@keyframes slideInLeft {
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
 /* Main content and sections */
 .main-content {
     margin-top: 0;
@@ -285,7 +339,7 @@ input:checked + .slider:before {
 }
 
 .timeline-content:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
 }
 
 .company {
@@ -314,11 +368,13 @@ input:checked + .slider:before {
 .project-card {
     padding: 2rem;
     text-align: left;
-    transition: transform 0.3s ease;
+    transition: all 0.2s ease;
+    border-radius: 4px;
 }
 
 .project-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .project-tech {
@@ -335,6 +391,7 @@ input:checked + .slider:before {
     margin: 2rem auto 0;
     padding: 1.5rem;
     text-align: left;
+    padding-bottom: 0%;
 }
 
 .form-group {
@@ -369,6 +426,7 @@ input:checked + .slider:before {
 .form-group textarea:focus {
     outline: none;
     border-bottom-color: var(--text-primary);
+    transition: border-bottom-color 0.2s ease;
 }
 
 .submit-btn {
@@ -412,6 +470,11 @@ input:checked + .slider:before {
     .theme-toggle {
         position: static;
         margin-top: 0.5rem;
+    }
+    
+    .first-name,
+    .last-name {
+        font-size: 4rem;
     }
     
     h1 {
@@ -466,6 +529,11 @@ input:checked + .slider:before {
     .nav-link {
         font-size: 0.8rem;
         padding: 0.2rem 0.3rem;
+    }
+    
+    .first-name,
+    .last-name {
+        font-size: 2.5rem;
     }
     
     .toggle-switch {
