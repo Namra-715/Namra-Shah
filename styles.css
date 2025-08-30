@@ -458,14 +458,15 @@ input:checked + .slider:before {
 
 /* Left-aligned items (odd numbers: 1, 3, 5...) */
 .timeline-item:nth-child(odd) {
-    padding-left: 4rem;
+    padding-left: 5rem;
     padding-right: 0;
+    margin-left: -3rem;
 }
 
 .timeline-item:nth-child(odd)::before {
     content: '';
     position: absolute;
-    left: 2rem;
+    left: 1rem;
     top: 0;
     height: 100%;
     width: 2px;
@@ -476,7 +477,7 @@ input:checked + .slider:before {
 .timeline-item:nth-child(odd):not(:last-child)::after {
     content: '';
     position: absolute;
-    left: 2rem;
+    left: 1rem;
     bottom: -2rem;
     width: 2px;
     height: 2rem;
@@ -487,14 +488,15 @@ input:checked + .slider:before {
 /* Right-aligned items (even numbers: 2, 4, 6...) */
 .timeline-item:nth-child(even) {
     padding-left: 0;
-    padding-right: 4rem;
+    padding-right: 5rem;
     text-align: right;
+    margin-right: -3rem;
 }
 
 .timeline-item:nth-child(even)::before {
     content: '';
     position: absolute;
-    right: 2rem;
+    right: 1rem;
     top: 0;
     height: 100%;
     width: 2px;
@@ -505,7 +507,7 @@ input:checked + .slider:before {
 .timeline-item:nth-child(even):not(:last-child)::after {
     content: '';
     position: absolute;
-    right: 2rem;
+    right: 1rem;
     bottom: -2rem;
     width: 2px;
     height: 2rem;
