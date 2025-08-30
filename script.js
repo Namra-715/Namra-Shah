@@ -157,6 +157,32 @@ function updateHeroScrollAnimation() {
             }
         }
     }
+    
+    // Update info icon opacity based on scroll
+    updateInfoIconOpacity(scrollProgress);
+}
+
+// Update info icon opacity based on scroll progress
+function updateInfoIconOpacity(scrollProgress) {
+    const infoIcon = document.getElementById('info-icon');
+    if (!infoIcon) return;
+    
+    // Start fading out when scroll begins, completely fade out by 50% scroll
+    const fadeStart = 0;
+    const fadeEnd = 0.5;
+    
+    if (scrollProgress <= fadeStart) {
+        // At the top, fully visible
+        infoIcon.style.opacity = '1';
+    } else if (scrollProgress >= fadeEnd) {
+        // Past fade end, completely hidden
+        infoIcon.style.opacity = '0';
+    } else {
+        // During fade, calculate opacity
+        const fadeProgress = (scrollProgress - fadeStart) / (fadeEnd - fadeStart);
+        const opacity = 1 - fadeProgress;
+        infoIcon.style.opacity = opacity.toString();
+    }
 }
 
 
@@ -292,6 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize background words system
     initBackgroundWords();
+    
+    // Initialize info icon click functionality
+    initInfoIcon();
 });
 
 // Add intersection observer for better performance
@@ -454,7 +483,7 @@ sections.forEach(section => {
 let backgroundWords = [];
 
 let activeWords = [];
-const maxWords = 32; // Reduced for cleaner look
+const maxWords = 46; // Increased to maintain crowding with faster 5-second animations
 
 // Tab visibility tracking to prevent sync issues
 let isTabVisible = true;
@@ -541,77 +570,47 @@ function createBackgroundWord(startAtRandomStage = false) {
     word.style.top = y + 'px';
     word.style.position = 'absolute';
     
-    // Consistent timing for smooth, cohesive feel - only start time varies
-    const fadeInTime = 1.0; // Fixed 1.0 seconds to fade in
-    const visibleTime = 2.5; // Fixed 2.5 seconds visible
-    const fadeOutTime = 3.0; // Fixed 3.0 seconds to fade out
-    const totalTime = fadeInTime + visibleTime + fadeOutTime; // Total: 6.5 seconds
+    // Use CSS animations instead of JavaScript timing for better performance and no sync issues
+    const totalTime = 5.0; // Total animation time in seconds (faster)
     
-    // Create a completely smooth, continuous opacity transition
-    word.style.opacity = '0';
+    // Create unique animation with random start time
+    const randomStart = startAtRandomStage ? Math.random() * totalTime : 0;
+    const animationName = `wordFade_${Math.random().toString(36).substr(2, 9)}`;
     
-    // Calculate total animation time and steps
-    const totalSteps = 60; // More steps for smoother transitions
-    const stepInterval = (totalTime * 1000) / totalSteps;
+    // Create unique keyframes for this word
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ${animationName} {
+            0% { opacity: 0; }
+            15% { opacity: 0.85; }
+            62% { opacity: 0.85; }
+            100% { opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
     
-    // If starting at random stage, offset the timing to prevent clustering
-    let startOffset = 0;
-    if (startAtRandomStage) {
-        // Random offset between 0 and 60% of the total lifecycle to spread out the stages
-        startOffset = Math.floor(Math.random() * (totalSteps * 0.6));
-    }
-    
-    // Store animation start time for tab visibility compensation
-    const animationStartTime = Date.now();
-    
-    // Create smooth opacity curve: 0 -> 0.85 -> 0
-    for (let i = 0; i <= totalSteps; i++) {
-        const stepDelay = (i + startOffset) * stepInterval;
-        
-        setTimeout(() => {
-            // Check if tab was hidden during animation and compensate
-            if (!isTabVisible) {
-                const timeSinceStart = Date.now() - animationStartTime;
-                const expectedStep = Math.floor(timeSinceStart / stepInterval);
-                
-                // If we're way behind schedule due to tab hiding, skip to appropriate step
-                if (i < expectedStep - 5) {
-                    return; // Skip this step, it's too old
-                }
-            }
-            
-            let opacity;
-            if (i <= totalSteps * 0.3) {
-                // First 30%: Fade in (0 to 0.85)
-                const progress = i / (totalSteps * 0.3);
-                opacity = progress * 0.85;
-            } else if (i <= totalSteps * 0.7) {
-                // Middle 40%: Stay visible at 0.85
-                opacity = 0.85;
-            } else {
-                // Last 30%: Fade out (0.85 to 0)
-                const progress = (i - totalSteps * 0.7) / (totalSteps * 0.3);
-                opacity = 0.85 - (progress * 0.85);
-            }
-            
-            word.style.opacity = opacity.toString();
-        }, stepDelay);
-    }
+    // Apply animation with random start time
+    word.style.animation = `${animationName} ${totalTime}s linear ${randomStart}s infinite`;
     
     // Add to hero section
     heroSection.appendChild(word);
     activeWords.push(word);
     
-    // Remove after animation completes and immediately create a new word
+    // Remove word and style after animation completes
     setTimeout(() => {
         if (word.parentNode) {
             word.parentNode.removeChild(word);
             activeWords = activeWords.filter(w => w !== word);
             
-            // Immediately create a new word to maintain uniform coverage
-            setTimeout(() => createBackgroundWord(), 20);
+            // Remove the unique style element
+            if (style.parentNode) {
+                style.parentNode.removeChild(style);
+            }
+            
+            // Create new word with spread out timing to prevent waves
+            setTimeout(() => createBackgroundWord(true), Math.random() * 1500);
         }
-    }, totalTime * 1000);
+    }, (totalTime + randomStart) * 1000);
 }
 
 function updateBackgroundWords() {
@@ -636,7 +635,7 @@ function loadBackgroundWords() {
 function initBackgroundWords() {
     // Load words first, then initialize
     loadBackgroundWords().then(() => {
-        // Create words gradually over the first few seconds to avoid the burst effect
+        // Create words with much more staggered timing to prevent waves
         let wordsCreated = 0;
         
         function createInitialWord() {
@@ -645,7 +644,7 @@ function initBackgroundWords() {
                 createBackgroundWord(true);
                 wordsCreated++;
                 
-                // Much faster creation to fill screen quickly
+                // More aggressive creation to fill screen faster
                 const randomDelay = 50 + Math.random() * 300; // 0.05 to 0.35 seconds
                 setTimeout(createInitialWord, randomDelay);
             } else {
@@ -654,56 +653,23 @@ function initBackgroundWords() {
                     // Replace words that have finished their lifecycle
                     if (activeWords.length < maxWords) {
                         // Much more random timing to completely break up waves
-                        const randomGap = Math.random() * 4000; // 0 to 4 seconds random gap
+                        const randomGap = Math.random() * 2000; // 0 to 2 seconds random gap
                         setTimeout(() => {
                             createBackgroundWord(true);
                         }, randomGap);
                     }
-                }, 200); // Check more frequently for better distribution
+                }, 100); // Check more frequently for better distribution
             }
         }
         
-        // Start creating initial words after a short delay
-        setTimeout(createInitialWord, 300);
+        // Start creating initial words after a very short delay
+        setTimeout(createInitialWord, 100);
     });
     
-    // Set up Page Visibility API to handle tab focus changes
-    setupTabVisibilityTracking();
+    // CSS animations handle all timing automatically - no manual tracking needed
 }
 
-// Handle tab visibility changes to prevent word synchronization
-function setupTabVisibilityTracking() {
-    // Modern browsers
-    if (typeof document.hidden !== "undefined") {
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-    }
-    // Older browsers
-    else if (typeof document.msHidden !== "undefined") {
-        document.addEventListener("msvisibilitychange", handleVisibilityChange);
-    }
-    // Even older browsers
-    else if (typeof document.webkitHidden !== "undefined") {
-        document.addEventListener("webkitvisibilitychange", handleVisibilityChange);
-    }
-}
-
-function handleVisibilityChange() {
-    const wasVisible = isTabVisible;
-    isTabVisible = !document.hidden && !document.msHidden && !document.webkitHidden;
-    
-    if (wasVisible && !isTabVisible) {
-        // Tab just became hidden
-        lastVisibilityChange = Date.now();
-    } else if (!wasVisible && isTabVisible) {
-        // Tab just became visible again
-        const timeHidden = Date.now() - lastVisibilityChange;
-        
-        // If tab was hidden for more than 2 seconds, redistribute words
-        if (timeHidden > 2000) {
-            redistributeWordsAfterTabFocus();
-        }
-    }
-}
+// CSS animations are immune to tab focus issues - no need for complex tracking
 
 function redistributeWordsAfterTabFocus() {
     // Clear all existing words and recreate them with fresh random timing
@@ -722,4 +688,65 @@ function redistributeWordsAfterTabFocus() {
             }, Math.random() * 1000); // Spread creation over 1 second
         }
     }, 100);
+}
+
+// Info icon functionality
+function initInfoIcon() {
+    const infoIcon = document.getElementById('info-icon');
+    if (!infoIcon) return;
+    
+    let tooltipTimer = null;
+    
+    // Toggle tooltip on click
+    infoIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        this.classList.toggle('active');
+        
+        // Clear any existing timer
+        if (tooltipTimer) {
+            clearTimeout(tooltipTimer);
+            tooltipTimer = null;
+        }
+        
+        // If tooltip is now active, start fade-out and hide sequence
+        if (this.classList.contains('active')) {
+            // Start fading out after 5 seconds
+            setTimeout(() => {
+                if (infoIcon.classList.contains('active')) {
+                    infoIcon.classList.add('fading');
+                }
+            }, 5000); // 5 seconds
+            
+            // Completely hide after 7 seconds
+            tooltipTimer = setTimeout(() => {
+                this.classList.remove('active');
+                this.classList.remove('fading');
+                tooltipTimer = null;
+            }, 7000); // 7 seconds
+        }
+    });
+    
+    // Close tooltip when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!infoIcon.contains(e.target)) {
+            infoIcon.classList.remove('active');
+            infoIcon.classList.remove('fading');
+            if (tooltipTimer) {
+                clearTimeout(tooltipTimer);
+                tooltipTimer = null;
+            }
+        }
+    });
+    
+    // Close tooltip on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            infoIcon.classList.remove('active');
+            infoIcon.classList.remove('fading');
+            if (tooltipTimer) {
+                clearTimeout(tooltipTimer);
+                tooltipTimer = null;
+            }
+        }
+    });
 }

@@ -4,13 +4,17 @@
     --text-primary: #ffffff;
     --text-secondary: #d9d9d9;
     --accent-color: #64ffda;
-    --nav-bg: rgba(0, 0, 0, 0.8);
+    --nav-bg: rgba(0, 0, 0, 0.7);
     --section-bg: #000000;
     --card-bg: rgba(255, 255, 255, 0.05);
     --border-color: rgba(255, 255, 255, 0.1);
     --bg-word-color: rgba(255, 255, 255, 0.7);
     --toggle-bg: #ffffff;
     --toggle-circle: #000000;
+    --info-text-color: #ffffff;
+    --tooltip-bg: rgba(0, 0, 0, 0.9);
+    --tooltip-text: #ffffff;
+    --project-arrow-color: #ffffff;
 }
 
 [data-theme="light"] {
@@ -18,13 +22,17 @@
     --text-primary: #000000;
     --text-secondary: #333333;
     --accent-color: #007acc;
-    --nav-bg: rgba(255, 255, 255, 0.8);
+    --nav-bg: rgba(255, 255, 255, 0.7);
     --section-bg: #ffffff;
     --card-bg: rgba(0, 0, 0, 0.05);
     --border-color: rgba(0, 0, 0, 0.1);
     --bg-word-color: rgba(0, 0, 0, 0.7);
     --toggle-bg: #000000;
     --toggle-circle: #ffffff;
+    --info-text-color: #000000;
+    --tooltip-bg: rgba(255, 255, 255, 0.95);
+    --tooltip-text: #000000;
+    --project-arrow-color: #000000;
 }
 
 /* Reset and base styles */
@@ -236,6 +244,77 @@ input:checked + .slider:before {
     }
 }
 
+/* Info Icon */
+.info-icon {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+/* Camouflaged clickable circle area */
+.info-icon::before {
+    content: '';
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+}
+
+.info-icon:hover {
+    transform: scale(1.1);
+}
+
+.info-text {
+    color: var(--info-text-color);
+    font-weight: 600;
+    font-size: 16px;
+    user-select: none;
+}
+
+.info-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(0);
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    width: 280px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+    margin-left: 16px;
+}
+
+
+
+.info-icon.active .info-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.info-icon.fading .info-tooltip {
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
 /* Main content and sections */
 .main-content {
     margin-top: 0;
@@ -356,7 +435,7 @@ input:checked + .slider:before {
 
 .timeline-item {
     position: relative;
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
     padding-left: 4rem;
 }
 
@@ -375,9 +454,9 @@ input:checked + .slider:before {
     content: '';
     position: absolute;
     left: 2rem;
-    bottom: -1.5rem;
+    bottom: -2rem;
     width: 2px;
-    height: 1.5rem;
+    height: 2rem;
     background: var(--bg-primary);
 }
 
@@ -409,7 +488,7 @@ input:checked + .slider:before {
 .projects-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
     margin-top: 0.5rem;
     max-width: 800px;
     margin-left: auto;
@@ -421,6 +500,21 @@ input:checked + .slider:before {
     text-align: left;
     transition: all 0.2s ease;
     border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Project Arrow */
+.project-arrow {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--project-arrow-color);
+    transition: all 0.3s ease;
+    user-select: none;
+    transform: rotate(45deg);
 }
 
 .project-card:hover {
@@ -645,7 +739,7 @@ input:checked + .slider:before {
 .background-word {
     position: absolute;
     color: var(--bg-word-color, rgba(255, 255, 255, 0.7));
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 450;
     font-family: 'Courier New', monospace;
     pointer-events: none;
