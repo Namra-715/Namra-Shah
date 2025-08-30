@@ -206,7 +206,7 @@ navLinks.forEach(link => {
                 
                 window.scrollTo({ top: targetTop, behavior: 'smooth' });
             } else {
-                const targetPosition = targetSection.offsetTop - 80; // Account for scroll-margin-top
+                const targetPosition = targetSection.offsetTop - 65; // Scroll further down for better positioning
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
