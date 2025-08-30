@@ -460,13 +460,13 @@ input:checked + .slider:before {
 .timeline-item:nth-child(odd) {
     padding-left: 5rem;
     padding-right: 0;
-    margin-left: -3rem;
+    margin-left: -3.5rem;
 }
 
 .timeline-item:nth-child(odd)::before {
     content: '';
     position: absolute;
-    left: 1rem;
+    left: 2.5rem;
     top: 0;
     height: 100%;
     width: 2px;
@@ -477,7 +477,7 @@ input:checked + .slider:before {
 .timeline-item:nth-child(odd):not(:last-child)::after {
     content: '';
     position: absolute;
-    left: 1rem;
+    left: 2.5rem;
     bottom: -2rem;
     width: 2px;
     height: 2rem;
@@ -490,13 +490,13 @@ input:checked + .slider:before {
     padding-left: 0;
     padding-right: 5rem;
     text-align: right;
-    margin-right: -3rem;
+    margin-right: -3.5rem;
 }
 
 .timeline-item:nth-child(even)::before {
     content: '';
     position: absolute;
-    right: 1rem;
+    right: 2.5rem;
     top: 0;
     height: 100%;
     width: 2px;
@@ -507,7 +507,7 @@ input:checked + .slider:before {
 .timeline-item:nth-child(even):not(:last-child)::after {
     content: '';
     position: absolute;
-    right: 1rem;
+    right: 2.5rem;
     bottom: -2rem;
     width: 2px;
     height: 2rem;
