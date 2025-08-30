@@ -2,12 +2,15 @@
 :root {
     --bg-primary: #000000;
     --text-primary: #ffffff;
-    --text-secondary: #cccccc;
+    --text-secondary: #d9d9d9;
     --accent-color: #64ffda;
-    --nav-bg: rgba(0, 0, 0, 0.9);
+    --nav-bg: rgba(0, 0, 0, 0.8);
     --section-bg: #000000;
     --card-bg: rgba(255, 255, 255, 0.05);
     --border-color: rgba(255, 255, 255, 0.1);
+    --bg-word-color: rgba(255, 255, 255, 0.7);
+    --toggle-bg: #ffffff;
+    --toggle-circle: #000000;
 }
 
 [data-theme="light"] {
@@ -15,10 +18,13 @@
     --text-primary: #000000;
     --text-secondary: #333333;
     --accent-color: #007acc;
-    --nav-bg: rgba(255, 255, 255, 0.9);
+    --nav-bg: rgba(255, 255, 255, 0.8);
     --section-bg: #ffffff;
     --card-bg: rgba(0, 0, 0, 0.05);
     --border-color: rgba(0, 0, 0, 0.1);
+    --bg-word-color: rgba(0, 0, 0, 0.7);
+    --toggle-bg: #000000;
+    --toggle-circle: #ffffff;
 }
 
 /* Reset and base styles */
@@ -116,7 +122,7 @@ p {
 
 .nav-underline {
     position: absolute;
-    bottom: 0;
+    bottom: 8px;
     height: 2px;
     background: var(--text-primary);
     transition: all 0.3s ease;
@@ -151,7 +157,7 @@ p {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #333333;
+    background-color: var(--toggle-bg, #333333) !important;
     transition: 0.3s;
     border-radius: 30px;
 }
@@ -159,11 +165,11 @@ p {
 .slider:before {
     position: absolute;
     content: "";
-    height: 12px;
-    width: 12px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--toggle-circle, white) !important;
     transition: 0.3s;
     border-radius: 50%;
 }
@@ -184,7 +190,7 @@ input:checked + .slider:before {
     justify-content: center;
     background-color: var(--section-bg);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .hero-content {
@@ -213,7 +219,7 @@ input:checked + .slider:before {
     color: var(--text-primary);
     transform: translateX(100vw);
     opacity: 0;
-    animation: slideInRight 1.5s ease-out 1s forwards;
+    animation: slideInRight 1.5s ease-out 0.5s forwards;
 }
 
 @keyframes slideInLeft {
@@ -634,3 +640,18 @@ input:checked + .slider:before {
         scroll-behavior: smooth;
     }
 }
+
+/* Dynamic Background Words */
+.background-word {
+    position: absolute;
+    color: var(--bg-word-color, rgba(255, 255, 255, 0.7));
+    font-size: 1.1rem;
+    font-weight: 450;
+    font-family: 'Courier New', monospace;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+    opacity: 0;
+}
+
+

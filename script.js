@@ -27,11 +27,15 @@ function updateTheme() {
         themeBtn.checked = false;
         // Show dark theme photo
         showDarkModePhoto();
+        // Update background words to dark theme colors
+        updateBackgroundWordsTheme('dark');
     } else {
         body.setAttribute('data-theme', 'light');
         themeBtn.checked = true;
         // Show light theme photo
         showLightModePhoto();
+        // Update background words to light theme colors
+        updateBackgroundWordsTheme('light');
     }
 }
 
@@ -57,11 +61,11 @@ function updateUnderline() {
             navUnderline.style.top = `${rect.bottom - navRect.top + 5}px`; // Position below the link
             navUnderline.style.bottom = 'auto';
         } else {
-            // On desktop, position underline at the bottom of navbar
+            // On desktop, position underline closer to the text
             navUnderline.style.width = `${rect.width}px`;
             navUnderline.style.left = `${rect.left - navRect.left}px`;
             navUnderline.style.top = 'auto';
-            navUnderline.style.bottom = '0';
+            navUnderline.style.bottom = '8px';
         }
     } else {
         // No active link (we're in hero section), hide the underline
@@ -285,6 +289,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUnderline();
     updateHeroScrollAnimation();
     updatePhotoFlip(); // Initialize photo flip state
+    
+    // Initialize background words system
+    initBackgroundWords();
 });
 
 // Add intersection observer for better performance
@@ -442,3 +449,277 @@ sections.forEach(section => {
     section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
     revealObserver.observe(section);
 });
+
+// ===== BACKGROUND WORDS SYSTEM =====
+let backgroundWords = [];
+
+let activeWords = [];
+const maxWords = 32; // Reduced for cleaner look
+
+// Tab visibility tracking to prevent sync issues
+let isTabVisible = true;
+let lastVisibilityChange = Date.now();
+let wordsNeedRedistribution = false;
+
+// Function to check if a position overlaps with existing words
+function checkOverlap(x, y) {
+    const minDistance = 60; // Reduced to prevent clustering and oscillation
+    
+    for (const activeWord of activeWords) {
+        const activeX = parseInt(activeWord.style.left);
+        const activeY = parseInt(activeWord.style.top);
+        
+        const distance = Math.sqrt((x - activeX) ** 2 + (y - activeY) ** 2);
+        if (distance < minDistance) {
+            return true; // Overlap detected
+        }
+    }
+    return false; // No overlap
+}
+
+// Function to update background words theme without recreating them
+function updateBackgroundWordsTheme(theme) {
+    // Update CSS variable instead of individual word styles
+    if (theme === 'light') {
+        document.documentElement.style.setProperty('--bg-word-color', 'rgba(0, 0, 0, 0.7)');
+    } else {
+        document.documentElement.style.setProperty('--bg-word-color', 'rgba(255, 255, 255, 0.7)');
+    }
+}
+
+function createBackgroundWord(startAtRandomStage = false) {
+    // Don't create if we have too many words
+    if (activeWords.length >= maxWords) return;
+    
+    // Don't create if words haven't been loaded yet
+    if (!backgroundWords || backgroundWords.length === 0) return;
+    
+    // Get hero section
+    const heroSection = document.getElementById('hero');
+    if (!heroSection) return;
+    
+    // Create word element
+    const word = document.createElement('div');
+    word.className = 'background-word';
+    
+    // Get random word
+    const randomIndex = Math.floor(Math.random() * backgroundWords.length);
+    word.textContent = backgroundWords[randomIndex];
+    
+    // Simple random positioning - let natural randomness handle distribution
+    let x, y;
+    let attempts = 0;
+    const maxAttempts = 100;
+    
+    do {
+        x = Math.random() * (heroSection.offsetWidth - 80);
+        y = Math.random() * (heroSection.offsetHeight - 25);
+        attempts++;
+        
+        // Simple overlap check - no smart distribution logic
+        let hasOverlap = false;
+        for (const activeWord of activeWords) {
+            const activeX = parseInt(activeWord.style.left);
+            const activeY = parseInt(activeWord.style.top);
+            const distance = Math.sqrt((x - activeX) ** 2 + (y - activeY) ** 2);
+            if (distance < 65) { // Moderate spacing
+                hasOverlap = true;
+                break;
+            }
+        }
+        
+        if (!hasOverlap) break;
+    } while (attempts < maxAttempts);
+    
+    // Always use a position - don't block word creation
+    if (attempts >= maxAttempts) {
+        x = Math.random() * (heroSection.offsetWidth - 80);
+        y = Math.random() * (heroSection.offsetHeight - 25);
+    }
+    
+    word.style.left = x + 'px';
+    word.style.top = y + 'px';
+    word.style.position = 'absolute';
+    
+    // Consistent timing for smooth, cohesive feel - only start time varies
+    const fadeInTime = 1.0; // Fixed 1.0 seconds to fade in
+    const visibleTime = 2.5; // Fixed 2.5 seconds visible
+    const fadeOutTime = 3.0; // Fixed 3.0 seconds to fade out
+    const totalTime = fadeInTime + visibleTime + fadeOutTime; // Total: 6.5 seconds
+    
+    // Create a completely smooth, continuous opacity transition
+    word.style.opacity = '0';
+    
+    // Calculate total animation time and steps
+    const totalSteps = 60; // More steps for smoother transitions
+    const stepInterval = (totalTime * 1000) / totalSteps;
+    
+    // If starting at random stage, offset the timing to prevent clustering
+    let startOffset = 0;
+    if (startAtRandomStage) {
+        // Random offset between 0 and 60% of the total lifecycle to spread out the stages
+        startOffset = Math.floor(Math.random() * (totalSteps * 0.6));
+    }
+    
+    // Store animation start time for tab visibility compensation
+    const animationStartTime = Date.now();
+    
+    // Create smooth opacity curve: 0 -> 0.85 -> 0
+    for (let i = 0; i <= totalSteps; i++) {
+        const stepDelay = (i + startOffset) * stepInterval;
+        
+        setTimeout(() => {
+            // Check if tab was hidden during animation and compensate
+            if (!isTabVisible) {
+                const timeSinceStart = Date.now() - animationStartTime;
+                const expectedStep = Math.floor(timeSinceStart / stepInterval);
+                
+                // If we're way behind schedule due to tab hiding, skip to appropriate step
+                if (i < expectedStep - 5) {
+                    return; // Skip this step, it's too old
+                }
+            }
+            
+            let opacity;
+            if (i <= totalSteps * 0.3) {
+                // First 30%: Fade in (0 to 0.85)
+                const progress = i / (totalSteps * 0.3);
+                opacity = progress * 0.85;
+            } else if (i <= totalSteps * 0.7) {
+                // Middle 40%: Stay visible at 0.85
+                opacity = 0.85;
+            } else {
+                // Last 30%: Fade out (0.85 to 0)
+                const progress = (i - totalSteps * 0.7) / (totalSteps * 0.3);
+                opacity = 0.85 - (progress * 0.85);
+            }
+            
+            word.style.opacity = opacity.toString();
+        }, stepDelay);
+    }
+    
+    // Add to hero section
+    heroSection.appendChild(word);
+    activeWords.push(word);
+    
+    // Remove after animation completes and immediately create a new word
+    setTimeout(() => {
+        if (word.parentNode) {
+            word.parentNode.removeChild(word);
+            activeWords = activeWords.filter(w => w !== word);
+            
+            // Immediately create a new word to maintain uniform coverage
+            setTimeout(() => createBackgroundWord(), 20);
+        }
+    }, totalTime * 1000);
+}
+
+function updateBackgroundWords() {
+    // Create new word if we have room
+    if (activeWords.length < maxWords) {
+        createBackgroundWord();
+    }
+}
+
+function loadBackgroundWords() {
+    return fetch('./background-words.txt')
+        .then(response => response.text())
+        .then(text => {
+            backgroundWords = text.split('\n').filter(word => word.trim() !== '');
+        })
+        .catch(error => {
+            // Fallback words if file loading fails
+            backgroundWords = ['ALGORITHM', 'STACK', 'MERGE', 'ARCHITECTURE', 'TYPESCRIPT', 'MARKDOWN', 'CLIENT', 'BINARY', 'CLASS', 'PERFORMANCE'];
+        });
+}
+
+function initBackgroundWords() {
+    // Load words first, then initialize
+    loadBackgroundWords().then(() => {
+        // Create words gradually over the first few seconds to avoid the burst effect
+        let wordsCreated = 0;
+        
+        function createInitialWord() {
+            if (wordsCreated < maxWords) {
+                // Create word with random start stage to avoid synchronized lifecycles
+                createBackgroundWord(true);
+                wordsCreated++;
+                
+                // Much faster creation to fill screen quickly
+                const randomDelay = 50 + Math.random() * 300; // 0.05 to 0.35 seconds
+                setTimeout(createInitialWord, randomDelay);
+            } else {
+                // All initial words created, start the continuous replacement system
+                setInterval(() => {
+                    // Replace words that have finished their lifecycle
+                    if (activeWords.length < maxWords) {
+                        // Much more random timing to completely break up waves
+                        const randomGap = Math.random() * 4000; // 0 to 4 seconds random gap
+                        setTimeout(() => {
+                            createBackgroundWord(true);
+                        }, randomGap);
+                    }
+                }, 200); // Check more frequently for better distribution
+            }
+        }
+        
+        // Start creating initial words after a short delay
+        setTimeout(createInitialWord, 300);
+    });
+    
+    // Set up Page Visibility API to handle tab focus changes
+    setupTabVisibilityTracking();
+}
+
+// Handle tab visibility changes to prevent word synchronization
+function setupTabVisibilityTracking() {
+    // Modern browsers
+    if (typeof document.hidden !== "undefined") {
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+    }
+    // Older browsers
+    else if (typeof document.msHidden !== "undefined") {
+        document.addEventListener("msvisibilitychange", handleVisibilityChange);
+    }
+    // Even older browsers
+    else if (typeof document.webkitHidden !== "undefined") {
+        document.addEventListener("webkitvisibilitychange", handleVisibilityChange);
+    }
+}
+
+function handleVisibilityChange() {
+    const wasVisible = isTabVisible;
+    isTabVisible = !document.hidden && !document.msHidden && !document.webkitHidden;
+    
+    if (wasVisible && !isTabVisible) {
+        // Tab just became hidden
+        lastVisibilityChange = Date.now();
+    } else if (!wasVisible && isTabVisible) {
+        // Tab just became visible again
+        const timeHidden = Date.now() - lastVisibilityChange;
+        
+        // If tab was hidden for more than 2 seconds, redistribute words
+        if (timeHidden > 2000) {
+            redistributeWordsAfterTabFocus();
+        }
+    }
+}
+
+function redistributeWordsAfterTabFocus() {
+    // Clear all existing words and recreate them with fresh random timing
+    activeWords.forEach(word => {
+        if (word.parentNode) {
+            word.parentNode.removeChild(word);
+        }
+    });
+    activeWords = [];
+    
+    // Create new words with fresh random timing
+    setTimeout(() => {
+        for (let i = 0; i < maxWords; i++) {
+            setTimeout(() => {
+                createBackgroundWord(true);
+            }, Math.random() * 1000); // Spread creation over 1 second
+        }
+    }, 100);
+}
