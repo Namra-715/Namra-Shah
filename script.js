@@ -624,7 +624,7 @@ function loadBackgroundWords() {
     return fetch('./background-words.txt')
         .then(response => response.text())
         .then(text => {
-            backgroundWords = text.split('\n').filter(word => word.trim() !== '');
+            backgroundWords = text.split('\n').filter(word => word.trim() !== '').map(word => word.toUpperCase());
         })
         .catch(error => {
             // Fallback words if file loading fails
