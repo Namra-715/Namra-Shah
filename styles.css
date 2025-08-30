@@ -73,6 +73,7 @@ h1 {
 h2 {
     font-size: 2.5rem;
     color: var(--text-primary);
+    margin-bottom: 2rem;
 }
 
 h3 {
@@ -257,6 +258,20 @@ input:checked + .slider:before {
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 100;
+    animation: attentionJump 2s ease-in-out infinite;
+}
+
+/* Attention-grabbing jump animation */
+@keyframes attentionJump {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    15%, 85% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
 }
 
 /* Camouflaged clickable circle area */
@@ -272,6 +287,7 @@ input:checked + .slider:before {
 
 .info-icon:hover {
     transform: scale(1.1);
+    animation: attentionJump 2s ease-in-out infinite;
 }
 
 .info-text {
@@ -435,11 +451,18 @@ input:checked + .slider:before {
 
 .timeline-item {
     position: relative;
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
     padding-left: 4rem;
+    transition: transform 0.3s ease;
 }
 
-.timeline-item::before {
+/* Left-aligned items (odd numbers: 1, 3, 5...) */
+.timeline-item:nth-child(odd) {
+    padding-left: 4rem;
+    padding-right: 0;
+}
+
+.timeline-item:nth-child(odd)::before {
     content: '';
     position: absolute;
     left: 2rem;
@@ -447,10 +470,10 @@ input:checked + .slider:before {
     height: 100%;
     width: 2px;
     background: var(--text-primary);
+    transition: transform 0.3s ease;
 }
 
-/* Add gap between timeline items */
-.timeline-item:not(:last-child)::after {
+.timeline-item:nth-child(odd):not(:last-child)::after {
     content: '';
     position: absolute;
     left: 2rem;
@@ -458,6 +481,36 @@ input:checked + .slider:before {
     width: 2px;
     height: 2rem;
     background: var(--bg-primary);
+    transition: transform 0.3s ease;
+}
+
+/* Right-aligned items (even numbers: 2, 4, 6...) */
+.timeline-item:nth-child(even) {
+    padding-left: 0;
+    padding-right: 4rem;
+    text-align: right;
+}
+
+.timeline-item:nth-child(even)::before {
+    content: '';
+    position: absolute;
+    right: 2rem;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background: var(--text-primary);
+    transition: transform 0.3s ease;
+}
+
+.timeline-item:nth-child(even):not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 2rem;
+    bottom: -2rem;
+    width: 2px;
+    height: 2rem;
+    background: var(--bg-primary);
+    transition: transform 0.3s ease;
 }
 
 
@@ -468,8 +521,36 @@ input:checked + .slider:before {
     transition: transform 0.3s ease;
 }
 
-.timeline-content:hover {
-    transform: translateY(-2px);
+/* Left-aligned items move left on hover */
+.timeline-item:nth-child(odd):hover .timeline-content {
+    transform: translateX(-12px);
+    transition: transform 0.3s ease;
+}
+
+.timeline-item:nth-child(odd):hover::before {
+    transform: translateX(-12px);
+    transition: transform 0.3s ease;
+}
+
+.timeline-item:nth-child(odd):hover:not(:last-child)::after {
+    transform: translateX(-12px);
+    transition: transform 0.3s ease;
+}
+
+/* Right-aligned items move right on hover */
+.timeline-item:nth-child(even):hover .timeline-content {
+    transform: translateX(12px);
+    transition: transform 0.3s ease;
+}
+
+.timeline-item:nth-child(even):hover::before {
+    transform: translateX(12px);
+    transition: transform 0.3s ease;
+}
+
+.timeline-item:nth-child(even):hover:not(:last-child)::after {
+    transform: translateX(12px);
+    transition: transform 0.3s ease;
 }
 
 .company {
@@ -488,7 +569,7 @@ input:checked + .slider:before {
 .projects-grid {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.2rem;
     margin-top: 0.5rem;
     max-width: 800px;
     margin-left: auto;
