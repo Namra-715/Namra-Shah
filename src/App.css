@@ -382,10 +382,11 @@ input:checked + .slider:before {
 }
 
 #contact.section {
-    height: 100vh;
+    height: auto;
+    min-height: auto;
     align-items: flex-start;
     padding-top: 6rem;
-    overflow: hidden;
+    padding-bottom: 2rem;
     position: relative;
     scroll-margin-top: 80px;
 }

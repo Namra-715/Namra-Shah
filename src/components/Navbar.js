@@ -96,7 +96,7 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange }) => {
       if (section === 'about') {
         offset = 65;
       } else if (section === 'contact') {
-        offset = 70; // much closer to navbar with auto height
+        offset = 0; // scroll to very bottom of contact section
       }
       
       const targetPosition = targetSection.offsetTop - offset;
