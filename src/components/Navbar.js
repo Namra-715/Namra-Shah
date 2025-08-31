@@ -88,10 +88,19 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange }) => {
 
   const handleNavClick = (e, section) => {
     e.preventDefault();
+    console.log('Nav clicked:', section); // Debug log
     const targetSection = document.getElementById(section);
     if (targetSection) {
-      const offset = section === 'about' ? 65 : 80;
+      // Use different offsets for different sections
+      let offset = 80; // default offset
+      if (section === 'about') {
+        offset = 65;
+      } else if (section === 'contact') {
+        offset = 70; // much closer to navbar with auto height
+      }
+      
       const targetPosition = targetSection.offsetTop - offset;
+      console.log('Scrolling to:', targetPosition, 'with offset:', offset); // Debug log
       window.scrollTo({
         top: targetPosition,
         behavior: 'smooth'
