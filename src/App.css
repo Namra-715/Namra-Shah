@@ -1071,4 +1071,13 @@ html, body { overflow-x: hidden; max-width: 100%; }
   }
 }
 
+.link-underline {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: var(--text-primary);
+}
+.link-underline:hover {
+  opacity: 0.85;
+}
+
 

@@ -1,34 +1,63 @@
 import React, { useEffect, useState, useRef } from 'react';
 
 const AboutSection = ({ theme }) => {
-  const [scrollCounter, setScrollCounter] = useState(1); // Start at 1 like original
-  const [darkThemePhoto, setDarkThemePhoto] = useState('profile-dark.JPG');
-  const [lightThemePhoto, setLightThemePhoto] = useState('profile-light.JPG');
-  const lastScrollYRef = useRef(0);
+  const [isFlipped, setIsFlipped] = useState(false);
   const sectionRef = useRef(null);
+  const phaseRef = useRef(0); // 0 -> not started, 1 -> armed (About >= 80%)
+  const cooldownRef = useRef(false);
 
   useEffect(() => {
-    let scrollCounter = 0;
-    const handleScroll = () => {
-      const section = sectionRef.current;
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-      const scrollProgress = Math.min(Math.max(1 - rect.top / viewportHeight, 0), 1);
+    const aboutEl = sectionRef.current;
+    if (!aboutEl) return;
 
-      // previous logic without logs
-      if (scrollProgress < 0.05) {
-        scrollCounter = 1;
-      } else if (scrollProgress > 0.4 && scrollCounter === 1) {
-        scrollCounter = 2;
-      }
+    // Observer to arm when About is >= 80% visible
+    const aboutObserver = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        const ratio = entry.intersectionRatio;
+        if (ratio >= 0.8 && phaseRef.current === 0) {
+          phaseRef.current = 1; // arm
+        }
+        // Optional: disarm if About not visible at all
+        if (ratio <= 0 && phaseRef.current !== 0 && !cooldownRef.current) {
+          phaseRef.current = 0;
+        }
+      },
+      { threshold: [0, 0.8, 1] }
+    );
+
+    aboutObserver.observe(aboutEl);
+
+    // Observer to flip when next section is >= 30% visible
+    const nextEl = document.getElementById('experience');
+    let nextObserver;
+    if (nextEl) {
+      nextObserver = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          const ratio = entry.intersectionRatio;
+          if (ratio >= 0.3 && phaseRef.current === 1 && !cooldownRef.current) {
+            cooldownRef.current = true;
+            setIsFlipped((prev) => !prev);
+            phaseRef.current = 0; // reset for next cycle
+            setTimeout(() => {
+              cooldownRef.current = false;
+            }, 800);
+          }
+        },
+        { threshold: [0, 0.3, 1] }
+      );
+      nextObserver.observe(nextEl);
+    }
+
+    return () => {
+      aboutObserver.disconnect();
+      if (nextObserver) nextObserver.disconnect();
     };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // No theme change effect - let scroll counter work independently
+  const showDark = (theme === 'dark') !== isFlipped;
+  const showLight = (theme === 'light') !== isFlipped;
 
   return (
     <section id="about" className="section" ref={sectionRef}>
@@ -37,20 +66,20 @@ const AboutSection = ({ theme }) => {
         <div className="typewriter-text">
           <p>Hello, I'm a CS grad student at Santa Clara University, originally from Ahmedabad, India.</p>
           <p>I am eager to learn more about software development, cybersecurity, and artificial intelligence.</p>
-          <p>Apart from that, my interests also extend to finance, business, and football.</p>
+          <p>Apart from that, my interests also extend to finance, business, and football. I absolutely love travelling.</p>
         </div>
         <div className="profile-photo">
           <img 
-            src={darkThemePhoto} 
+            src="profile-dark.JPG" 
             alt="Namra Shah" 
             className="profile-img dark-mode-img"
-            style={{ display: theme === 'dark' ? 'block' : 'none' }}
+            style={{ display: showDark ? 'block' : 'none' }}
           />
           <img 
-            src={lightThemePhoto} 
+            src="profile-light.JPG" 
             alt="Namra Shah" 
             className="profile-img light-mode-img"
-            style={{ display: theme === 'light' ? 'block' : 'none' }}
+            style={{ display: showLight ? 'block' : 'none' }}
           />
         </div>
       </div>
