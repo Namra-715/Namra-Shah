@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange }) => {
+const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLinks = false }) => {
   const navRef = useRef(null);
   const underlineRef = useRef(null);
 
@@ -88,7 +88,6 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange }) => {
 
   const handleNavClick = (e, section) => {
     e.preventDefault();
-    console.log('Nav clicked:', section); // Debug log
     const targetSection = document.getElementById(section);
     if (targetSection) {
       // Use different offsets for different sections
@@ -100,7 +99,6 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange }) => {
       }
       
       const targetPosition = targetSection.offsetTop - offset;
-      console.log('Scrolling to:', targetPosition, 'with offset:', offset); // Debug log
       window.scrollTo({
         top: targetPosition,
         behavior: 'smooth'
@@ -111,48 +109,50 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange }) => {
   return (
     <nav className="navbar" ref={navRef}>
       <div className="nav-container">
-        <ul className="nav-menu">
-          <li className="nav-item">
-            <a 
-              href="#about" 
-              className={`nav-link ${activeSection === 'about' ? 'active' : ''}`} 
-              data-section="about"
-              onClick={(e) => handleNavClick(e, 'about')}
-            >
-              About Me
-            </a>
-          </li>
-          <li className="nav-item">
-            <a 
-              href="#experience" 
-              className={`nav-link ${activeSection === 'experience' ? 'active' : ''}`} 
-              data-section="experience"
-              onClick={(e) => handleNavClick(e, 'experience')}
-            >
-              Experience
-            </a>
-          </li>
-          <li className="nav-item">
-            <a 
-              href="#projects" 
-              className={`nav-link ${activeSection === 'projects' ? 'active' : ''}`} 
-              data-section="projects"
-              onClick={(e) => handleNavClick(e, 'projects')}
-            >
-              Projects
-            </a>
-          </li>
-          <li className="nav-item">
-            <a 
-              href="#contact" 
-              className={`nav-link ${activeSection === 'contact' ? 'active' : ''}`} 
-              data-section="contact"
-              onClick={(e) => handleNavClick(e, 'contact')}
-            >
-              Contact Me
-            </a>
-          </li>
-        </ul>
+        {!hideNavLinks && (
+          <ul className="nav-menu">
+            <li className="nav-item">
+              <a 
+                href="#about" 
+                className={`nav-link ${activeSection === 'about' ? 'active' : ''}`} 
+                data-section="about"
+                onClick={(e) => handleNavClick(e, 'about')}
+              >
+                About Me
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#experience" 
+                className={`nav-link ${activeSection === 'experience' ? 'active' : ''}`} 
+                data-section="experience"
+                onClick={(e) => handleNavClick(e, 'experience')}
+              >
+                Experience
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#projects" 
+                className={`nav-link ${activeSection === 'projects' ? 'active' : ''}`} 
+                data-section="projects"
+                onClick={(e) => handleNavClick(e, 'projects')}
+              >
+                Projects
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                href="#contact" 
+                className={`nav-link ${activeSection === 'contact' ? 'active' : ''}`} 
+                data-section="contact"
+                onClick={(e) => handleNavClick(e, 'contact')}
+              >
+                Contact Me
+              </a>
+            </li>
+          </ul>
+        )}
         <div className="theme-toggle">
           <label className="toggle-switch">
             <input 
@@ -165,7 +165,7 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange }) => {
           </label>
         </div>
       </div>
-      <div className="nav-underline" ref={underlineRef}></div>
+      {!hideNavLinks && <div className="nav-underline" ref={underlineRef}></div>}
     </nav>
   );
 };

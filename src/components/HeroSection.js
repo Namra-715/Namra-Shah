@@ -1,9 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import BackgroundWords from './BackgroundWords';
+import React, { useEffect, useRef } from 'react';
 
-const HeroSection = ({ theme }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [isFading, setIsFading] = useState(false);
+const HeroSection = ({ theme, onInfoClick }) => {
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
 
@@ -105,24 +102,13 @@ const HeroSection = ({ theme }) => {
   const handleInfoClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Info icon clicked!'); // Debug log
-    setShowTooltip(true);
-    setIsFading(false);
-    
-    // Start fade out after 5 seconds
-    setTimeout(() => {
-      setIsFading(true);
-      // Hide completely after fade animation (2 seconds)
-      setTimeout(() => {
-        setShowTooltip(false);
-        setIsFading(false);
-      }, 2000);
-    }, 5000);
+    if (onInfoClick) {
+      onInfoClick();
+    }
   };
 
   return (
     <section id="hero" className="hero-section">
-      <BackgroundWords theme={theme} />
       <div className="hero-content">
         <div className="name-container">
           <h1 className="first-name" ref={firstNameRef}>Namra</h1>
@@ -131,12 +117,8 @@ const HeroSection = ({ theme }) => {
       </div>
       
       {/* Info Icon */}
-      <div className={`info-icon ${showTooltip ? 'active' : ''} ${isFading ? 'fading' : ''}`} id="info-icon" onClick={handleInfoClick}>
+      <div className="info-icon" id="info-icon" onClick={handleInfoClick}>
         <span className="info-text">i</span>
-        <div className="info-tooltip">
-          <p>Fun Fact: All words visible on this page are actual topics I have recently been thinking about. If you are interested in any of these, let's chat.
-              And if you find yourself on there, Be Proud!</p>
-        </div>
       </div>
     </section>
   );

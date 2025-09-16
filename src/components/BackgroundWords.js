@@ -1,6 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 
-const BackgroundWords = ({ theme }) => {
+// Global state to manage background words across all instances
+let globalActiveWords = [];
+let globalIntervals = [];
+let globalTimeouts = [];
+let isInitialized = false;
+
+const BackgroundWords = ({ theme, containerId = 'hero' }) => {
   const containerRef = useRef(null);
   const activeWordsRef = useRef([]);
   const backgroundWordsRef = useRef([]);
@@ -10,7 +16,7 @@ const BackgroundWords = ({ theme }) => {
   const checkOverlap = (x, y) => {
     const minDistance = 80; // Increased to prevent clustering
     
-    for (const activeWord of activeWordsRef.current) {
+    for (const activeWord of globalActiveWords) {
       const activeX = parseInt(activeWord.style.left);
       const activeY = parseInt(activeWord.style.top);
       
@@ -22,13 +28,50 @@ const BackgroundWords = ({ theme }) => {
     return false; // No overlap
   };
 
+  // Function to check if position overlaps with the card area
+  const isOverlappingCard = (x, y) => {
+    if (containerId !== 'info-page') return false;
+    
+    const card = document.querySelector('.info-page-card');
+    if (!card) {
+      return false;
+    }
+    
+    const cardRect = card.getBoundingClientRect();
+    const containerSection = document.getElementById(containerId);
+    if (!containerSection) {
+      return false;
+    }
+    
+    const containerRect = containerSection.getBoundingClientRect();
+    
+    // Convert card position to container-relative coordinates
+    const cardLeft = cardRect.left - containerRect.left;
+    const cardTop = cardRect.top - containerRect.top;
+    const cardRight = cardLeft + cardRect.width;
+    const cardBottom = cardTop + cardRect.height;
+    
+    // Check if word position is within card bounds (with minimal buffer)
+    const buffer = 20; // Minimal buffer to protect just the card area
+    const overlaps = x >= cardLeft - buffer && x <= cardRight + buffer && 
+                    y >= cardTop - buffer && y <= cardBottom + buffer;
+    
+    return overlaps;
+  };
+
+  // Function to check if position is too close to content areas
+  const isNearContent = (x, y) => {
+    // Temporarily disabled to test word generation
+    return false;
+  };
+
   // Function to find the least crowded area
   const findLeastCrowdedArea = () => {
-    const heroSection = document.getElementById('hero');
-    if (!heroSection) return { x: 0, y: 0 };
+    const containerSection = document.getElementById(containerId);
+    if (!containerSection) return { x: 0, y: 0 };
     
-    const width = heroSection.offsetWidth - 80;
-    const height = heroSection.offsetHeight - 25;
+    const width = containerSection.offsetWidth - 80;
+    const height = containerSection.offsetHeight - 25;
     
     // Divide screen into a grid to find least crowded areas
     const gridSize = 100;
@@ -44,7 +87,7 @@ const BackgroundWords = ({ theme }) => {
         
         // Count words in this area
         let wordCount = 0;
-        for (const activeWord of activeWordsRef.current) {
+        for (const activeWord of globalActiveWords) {
           const activeX = parseInt(activeWord.style.left);
           const activeY = parseInt(activeWord.style.top);
           const distance = Math.sqrt((centerX - activeX) ** 2 + (centerY - activeY) ** 2);
@@ -64,15 +107,15 @@ const BackgroundWords = ({ theme }) => {
 
   // Function to create background word (exactly like original)
   const createBackgroundWord = (startAtRandomStage = false) => {
-    // Don't create if we have too many words
-    if (activeWordsRef.current.length >= maxWords) return;
+    // Don't create if we have too many words globally
+    if (globalActiveWords.length >= maxWords) return;
     
     // Don't create if words haven't been loaded yet
     if (!backgroundWordsRef.current || backgroundWordsRef.current.length === 0) return;
     
-    // Get hero section
-    const heroSection = document.getElementById('hero');
-    if (!heroSection) return;
+    // Get container section
+    const containerSection = document.getElementById(containerId);
+    if (!containerSection) return;
     
     // Create word element
     const word = document.createElement('div');
@@ -82,10 +125,10 @@ const BackgroundWords = ({ theme }) => {
     const randomIndex = Math.floor(Math.random() * backgroundWordsRef.current.length);
     word.textContent = backgroundWordsRef.current[randomIndex];
     
-    // Smart positioning to prevent clustering
+    // Smart positioning to prevent clustering and avoid content
     let x, y;
     let attempts = 0;
-    const maxAttempts = 50;
+    const maxAttempts = 100; // Increased attempts
     
     // First try to find the least crowded area
     const leastCrowdedArea = findLeastCrowdedArea();
@@ -100,25 +143,40 @@ const BackgroundWords = ({ theme }) => {
       y = baseY + (Math.random() - 0.5) * 60;
       
       // Ensure within bounds
-      x = Math.max(0, Math.min(x, heroSection.offsetWidth - 80));
-      y = Math.max(0, Math.min(y, heroSection.offsetHeight - 25));
+      x = Math.max(0, Math.min(x, containerSection.offsetWidth - 80));
+      y = Math.max(0, Math.min(y, containerSection.offsetHeight - 25));
       
       attempts++;
       
-      // Check for overlap with existing words
-      if (!checkOverlap(x, y)) break;
+      // Check for overlap with existing words, proximity to content, and card overlap
+      if (!checkOverlap(x, y) && !isNearContent(x, y) && !isOverlappingCard(x, y)) break;
       
     } while (attempts < maxAttempts);
     
-    // Fallback to random position if no good spot found
+    // If still no good position found, try completely random positions
     if (attempts >= maxAttempts) {
-      x = Math.random() * (heroSection.offsetWidth - 80);
-      y = Math.random() * (heroSection.offsetHeight - 25);
+      let foundGoodPosition = false;
+      for (let i = 0; i < 50; i++) {
+        x = Math.random() * (containerSection.offsetWidth - 80);
+        y = Math.random() * (containerSection.offsetHeight - 25);
+        
+        if (!checkOverlap(x, y) && !isNearContent(x, y) && !isOverlappingCard(x, y)) {
+          foundGoodPosition = true;
+          break;
+        }
+      }
+      
+      // If no good position found after all attempts, don't create the word
+      if (!foundGoodPosition) {
+        return;
+      }
     }
     
     word.style.left = x + 'px';
     word.style.top = y + 'px';
     word.style.position = 'absolute';
+    word.style.zIndex = '1'; // Background words below everything
+    
     
     // Use CSS animations instead of JavaScript timing for better performance and no sync issues
     const totalTime = 5.0; // Total animation time in seconds (faster)
@@ -142,14 +200,16 @@ const BackgroundWords = ({ theme }) => {
     // Apply animation with random start time
     word.style.animation = `${animationName} ${totalTime}s linear ${randomStart}s infinite`;
     
-    // Add to hero section
-    heroSection.appendChild(word);
+    // Add to container section
+    containerSection.appendChild(word);
+    globalActiveWords.push(word);
     activeWordsRef.current.push(word);
     
     // Remove word and style after animation completes
     setTimeout(() => {
       if (word.parentNode) {
         word.parentNode.removeChild(word);
+        globalActiveWords = globalActiveWords.filter(w => w !== word);
         activeWordsRef.current = activeWordsRef.current.filter(w => w !== word);
         
         // Remove the unique style element
@@ -185,44 +245,46 @@ const BackgroundWords = ({ theme }) => {
     }
   };
 
-  // Function to initialize background words (exactly like original)
+  // Function to initialize background words (start immediately)
   const initBackgroundWords = () => {
+    // Only initialize once globally
+    if (isInitialized) return;
+    isInitialized = true;
+    
     // Load words first, then initialize
     loadBackgroundWords().then(() => {
-      // Start background words very early (1 second)
-      const heroAnimationDelay = 1000;
+      // Start background words immediately
+      let wordsCreated = 0;
       
-      setTimeout(() => {
-        // Create words with much more staggered timing to prevent waves
-        let wordsCreated = 0;
-        
-        function createInitialWord() {
-          if (wordsCreated < maxWords) {
-            // Create word with random start stage to avoid synchronized lifecycles
-            createBackgroundWord(true);
-            wordsCreated++;
-            
-            // More aggressive creation to fill screen faster
-            const randomDelay = 50 + Math.random() * 300; // 0.05 to 0.35 seconds
-            setTimeout(createInitialWord, randomDelay);
-          } else {
-            // All initial words created, start the continuous replacement system
-            setInterval(() => {
-              // Replace words that have finished their lifecycle
-              if (activeWordsRef.current.length < maxWords) {
-                // Much more random timing to completely break up waves
-                const randomGap = Math.random() * 2000; // 0 to 2 seconds random gap
-                setTimeout(() => {
-                  createBackgroundWord(true);
-                }, randomGap);
-              }
-            }, 100); // Check more frequently for better distribution
-          }
+      function createInitialWord() {
+        if (wordsCreated < maxWords) {
+          // Create word with random start stage to avoid synchronized lifecycles
+          createBackgroundWord(true);
+          wordsCreated++;
+          
+          // Create words quickly to fill screen
+          const randomDelay = 20 + Math.random() * 100; // 0.02 to 0.12 seconds
+          const timeoutId = setTimeout(createInitialWord, randomDelay);
+          globalTimeouts.push(timeoutId);
+        } else {
+          // All initial words created, start the continuous replacement system
+          const intervalId = setInterval(() => {
+            // Replace words that have finished their lifecycle
+            if (globalActiveWords.length < maxWords) {
+              // Random timing to break up waves
+              const randomGap = Math.random() * 1000; // 0 to 1 seconds random gap
+              const timeoutId = setTimeout(() => {
+                createBackgroundWord(true);
+              }, randomGap);
+              globalTimeouts.push(timeoutId);
+            }
+          }, 50); // Check frequently for better distribution
+          globalIntervals.push(intervalId);
         }
-        
-        // Start creating initial words after hero animation completes
-        createInitialWord();
-      }, heroAnimationDelay);
+      }
+      
+      // Start creating words immediately
+      createInitialWord();
     });
   };
 
@@ -231,15 +293,17 @@ const BackgroundWords = ({ theme }) => {
     initBackgroundWords();
     
     return () => {
-      // Cleanup: remove all active words
+      // Cleanup: remove all active words from this instance
       activeWordsRef.current.forEach(word => {
         if (word.parentNode) {
           word.parentNode.removeChild(word);
         }
+        // Remove from global array too
+        globalActiveWords = globalActiveWords.filter(w => w !== word);
       });
       activeWordsRef.current = [];
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [containerId]); // Re-run when containerId changes
 
   useEffect(() => {
     // Update theme when theme changes
@@ -247,7 +311,7 @@ const BackgroundWords = ({ theme }) => {
   }, [theme]);
 
   return (
-    <div ref={containerRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
+    <div ref={containerRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', zIndex: 1 }}>
       {/* Words are created and managed by DOM manipulation, not React state */}
     </div>
   );
