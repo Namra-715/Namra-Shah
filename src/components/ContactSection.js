@@ -13,7 +13,7 @@ const ContactSection = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
 
   useEffect(() => {
     if (!PUBLIC_KEY) {
@@ -39,6 +39,8 @@ const ContactSection = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitStatus === 'success') return; // prevent re-submit after sent
+
     setIsSubmitting(true);
     setSubmitStatus(null);
 
@@ -79,6 +81,9 @@ const ContactSection = () => {
     }
   };
 
+  const buttonLabel = isSubmitting ? 'Sending...' : submitStatus === 'success' ? 'Sent!' : 'Send Message';
+  const buttonDisabled = isSubmitting || submitStatus === 'success';
+
   return (
     <section id="contact" className="section">
       <div className="section-content">
@@ -93,6 +98,7 @@ const ContactSection = () => {
               value={formData.name}
               onChange={handleInputChange}
               required 
+              disabled={submitStatus === 'success'}
             />
           </div>
           <div className="form-group">
@@ -104,6 +110,7 @@ const ContactSection = () => {
               value={formData.email}
               onChange={handleInputChange}
               required 
+              disabled={submitStatus === 'success'}
             />
           </div>
           <div className="form-group">
@@ -115,6 +122,7 @@ const ContactSection = () => {
               value={formData.subject}
               onChange={handleInputChange}
               required 
+              disabled={submitStatus === 'success'}
             />
           </div>
           <div className="form-group">
@@ -126,18 +134,16 @@ const ContactSection = () => {
               value={formData.message}
               onChange={handleInputChange}
               required
+              disabled={submitStatus === 'success'}
             ></textarea>
           </div>
           <button 
             type="submit" 
             className="submit-btn"
-            disabled={isSubmitting}
+            disabled={buttonDisabled}
           >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
+            {buttonLabel}
           </button>
-          {submitStatus === 'success' && (
-            <p style={{ color: 'green', marginTop: '1rem' }}>Message sent successfully!</p>
-          )}
           {submitStatus === 'error' && (
             <p style={{ color: 'red', marginTop: '1rem' }}>Failed to send message. Please try again.</p>
           )}
