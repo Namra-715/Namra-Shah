@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import emailjs from 'emailjs-com';
 
+const SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+const TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
+const PUBLIC_KEY = process.env.REACT_APP_EMAILJS_PUBLIC_KEY; // EmailJS public key (formerly user ID)
+
 const ContactSection = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -12,8 +16,17 @@ const ContactSection = () => {
   const [submitStatus, setSubmitStatus] = useState(null);
 
   useEffect(() => {
-    // Initialize EmailJS
-    emailjs.init("YOUR_USER_ID"); // You'll need to replace this with your actual EmailJS user ID
+    if (!PUBLIC_KEY) {
+      // eslint-disable-next-line no-console
+      console.error('EmailJS public key missing. Set REACT_APP_EMAILJS_PUBLIC_KEY in your env.');
+      return;
+    }
+    try {
+      emailjs.init(PUBLIC_KEY);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('EmailJS init failed:', e);
+    }
   }, []);
 
   const handleInputChange = (e) => {
@@ -29,31 +42,36 @@ const ContactSection = () => {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      // eslint-disable-next-line no-console
+      console.error('EmailJS env vars missing. Set REACT_APP_EMAILJS_SERVICE_ID, REACT_APP_EMAILJS_TEMPLATE_ID, REACT_APP_EMAILJS_PUBLIC_KEY.');
+      setIsSubmitting(false);
+      setSubmitStatus('error');
+      return;
+    }
+
     try {
       const result = await emailjs.send(
-        'YOUR_SERVICE_ID', // Replace with your EmailJS service ID
-        'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
+        SERVICE_ID,
+        TEMPLATE_ID,
         {
           from_name: formData.name,
           from_email: formData.email,
           subject: formData.subject,
           message: formData.message,
+          reply_to: formData.email,
         },
-        'YOUR_USER_ID' // Replace with your EmailJS user ID
+        PUBLIC_KEY
       );
 
       if (result.status === 200) {
         setSubmitStatus('success');
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: ''
-        });
+        setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
         setSubmitStatus('error');
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('EmailJS Error:', error);
       setSubmitStatus('error');
     } finally {
