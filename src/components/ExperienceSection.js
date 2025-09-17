@@ -14,7 +14,7 @@ const ExperienceSection = () => {
       title: "Tech Lead / Software Developer",
       company: "Google Developer Student Clubs",
       duration: "2022 - 2023",
-      description: "Built backend focusedweb applications using React, Flask and third party APIs like Google Maps API."
+      description: "Built backend focused web applications using React, Flask and third party APIs like Google Maps API."
     },
     {
       id: 3,

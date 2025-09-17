@@ -6,13 +6,16 @@ milpitas
 santa clara
 software engineer
 grad
-stock
+stocks
 paratha
 aaryan
 ishant
 varun
 mohnish
-developer
+simon
+jess
+ankitha
+vishal
 system design
 krish
 jaiwin
@@ -21,34 +24,26 @@ cholafali
 f1 visa
 tariffs
 keir starmer
-stocks
 anu
 papa
 prime nine
 google
 portfolio
 series a
-trader joe's
 india
-zakhir khan
+zakir khan
 kdb
-sarabhai
 bassi
 real estate
-sandwich
-paryushan
 mummy
 richard mille
-rimac nevera
+rimac
 vegas
 h1b
-fafda
-property
+real estate
 website
 open ai
 meta
-new house
-sauce pan
 grocery
 coffee
 fed cuts
@@ -65,37 +60,141 @@ cybersecurity
 caltrain
 karan aujla
 man city
-cooking
-granola
 keshav
 tanmay
 dinil
 pj
 tanishq
 yash
-pani puri
 poker
-card counting
 sponsorship
 mexico
 research
 cursor
 football
-roti sabzi
 venture capital
 mumbai
 arista
 ozark
-reels
 leetcode
-business
 suzlon energy
-pasta
 samay raina
 bayer leverkusen
 switzerland
 rishi sunak
-lazarus heist
+lazarus group
 geoff white
 putin
 blackjack
+jerome powell
+Santa fe
+oracle
+microsoft
+HFT
+GST 2.0
+navratri
+phil foden
+agri-tech
+exports
+clash royale
+delphi ai
+Norway
+bedrock robotics
+pavegen
+helion energy
+vercel
+nvidia
+raghav chaddha
+blackrock
+banksy
+saudi pif 
+lightspeed
+accel 
+ali raza
+shjr
+SEBI
+arizona tea 
+peoplesoft
+pavel durov
+snowden
+palantir
+mira murati
+safe superintelligence
+thinky machines
+freeports
+payday lending
+zurich
+deedy das 
+aditya rikhari
+nepal
+indian food
+private equity
+succession
+himym
+b99
+EU
+GIFT city
+Narcos
+patel eng.
+Harsh Sanghavi
+tax planning
+US FTA 
+accord
+Camry
+blinkit
+Gold Standard
+anthropic
+Alcaraz
+Sinner
+RTX 
+TABS accounting
+Irfan khan
+deepseek
+anuv jain 
+Paulo Coelho
+The alchemist
+'Siddhartha'
+The Brothers Karamazov
+Room
+The book thief
+The Kite Runner
+The prophet
+aditya gadhvi
+shubh
+jim simons
+ren-tech
+dev patel
+react
+chernobyl
+pasta
+surat
+nano banana 
+BRICS
+Schindler's List 
+lovable
+scuba-diving
+autobahn
+bali
+social travel
+microfinance
+social engineering
+DDoS
+Jainism
+Handvo
+bayaan
+mahudi
+jayalgarh
+cappadocia
+rio carnival
+yellowstone
+alaska
+glacier
+Yes theory
+Ibiza
+golden handcuffs
+Architecture
+Munnar hills
+manali
+lamborghini
+uttarayan
+steve cohen

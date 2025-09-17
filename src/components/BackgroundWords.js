@@ -18,6 +18,10 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
   const experimentIntervals = useRef([]);
   const experimentTimeouts = useRef([]);
   const experimentInitialized = useRef(false);
+  
+  // Track recently used words to avoid repetition
+  const recentWords = useRef([]);
+  const maxRecentWords = 10; // Keep track of last 10 words used
 
   // Function to check if a position overlaps with existing words
   const checkOverlap = (x, y) => {
@@ -122,7 +126,7 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
     return bestArea;
   };
 
-  // Function to create background word (exactly like original)
+  // Function to create background word with improved randomness
   const createBackgroundWord = (startAtRandomStage = false) => {
     // Don't create if we have too many words
     const currentWords = isExperimentPage ? experimentActiveWords.current : globalActiveWords;
@@ -139,9 +143,25 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
     const word = document.createElement('div');
     word.className = 'background-word';
     
-    // Get random word
-    const randomIndex = Math.floor(Math.random() * backgroundWordsRef.current.length);
-    word.textContent = backgroundWordsRef.current[randomIndex];
+    // Improved random word selection - avoid recently used words
+    let selectedWord;
+    let wordAttempts = 0;
+    const maxWordAttempts = 20;
+    
+    do {
+      const randomIndex = Math.floor(Math.random() * backgroundWordsRef.current.length);
+      selectedWord = backgroundWordsRef.current[randomIndex];
+      wordAttempts++;
+    } while (recentWords.current.includes(selectedWord) && wordAttempts < maxWordAttempts);
+    
+    // If we couldn't find a non-recent word, just use the last attempt
+    word.textContent = selectedWord;
+    
+    // Add to recent words and maintain the list
+    recentWords.current.push(selectedWord);
+    if (recentWords.current.length > maxRecentWords) {
+      recentWords.current.shift(); // Remove oldest word
+    }
     
     // Smart positioning to prevent clustering and avoid content
     let x, y;
