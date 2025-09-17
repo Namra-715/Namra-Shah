@@ -11,12 +11,21 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
   const activeWordsRef = useRef([]);
   const backgroundWordsRef = useRef([]);
   const maxWords = 46;
+  
+  // Use separate state for experiment page to avoid global interference
+  const isExperimentPage = containerId === 'background-words-section';
+  const experimentActiveWords = useRef([]);
+  const experimentIntervals = useRef([]);
+  const experimentTimeouts = useRef([]);
+  const experimentInitialized = useRef(false);
 
   // Function to check if a position overlaps with existing words
   const checkOverlap = (x, y) => {
     const minDistance = 80; // Increased to prevent clustering
     
-    for (const activeWord of globalActiveWords) {
+    const wordsToCheck = isExperimentPage ? experimentActiveWords.current : globalActiveWords;
+    
+    for (const activeWord of wordsToCheck) {
       const activeX = parseInt(activeWord.style.left);
       const activeY = parseInt(activeWord.style.top);
       
@@ -30,7 +39,7 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
 
   // Function to check if position overlaps with the card area
   const isOverlappingCard = (x, y) => {
-    if (containerId !== 'info-page') return false;
+    if (containerId !== 'background-words-section') return false;
     
     const card = document.querySelector('.info-page-card');
     if (!card) {
@@ -57,6 +66,13 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
                     y >= cardTop - buffer && y <= cardBottom + buffer;
     
     return overlaps;
+  };
+
+  // Function to check if position is in the hero section (avoid placing words there)
+  const isInHeroSection = (x, y) => {
+    // Since we're now targeting only the background-words-section container,
+    // we don't need to check for hero section overlap as it's above this container
+    return false;
   };
 
   // Function to check if position is too close to content areas
@@ -87,7 +103,8 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
         
         // Count words in this area
         let wordCount = 0;
-        for (const activeWord of globalActiveWords) {
+        const wordsToCheck = isExperimentPage ? experimentActiveWords.current : globalActiveWords;
+        for (const activeWord of wordsToCheck) {
           const activeX = parseInt(activeWord.style.left);
           const activeY = parseInt(activeWord.style.top);
           const distance = Math.sqrt((centerX - activeX) ** 2 + (centerY - activeY) ** 2);
@@ -107,8 +124,9 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
 
   // Function to create background word (exactly like original)
   const createBackgroundWord = (startAtRandomStage = false) => {
-    // Don't create if we have too many words globally
-    if (globalActiveWords.length >= maxWords) return;
+    // Don't create if we have too many words
+    const currentWords = isExperimentPage ? experimentActiveWords.current : globalActiveWords;
+    if (currentWords.length >= maxWords) return;
     
     // Don't create if words haven't been loaded yet
     if (!backgroundWordsRef.current || backgroundWordsRef.current.length === 0) return;
@@ -149,7 +167,7 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
       attempts++;
       
       // Check for overlap with existing words, proximity to content, and card overlap
-      if (!checkOverlap(x, y) && !isNearContent(x, y) && !isOverlappingCard(x, y)) break;
+      if (!checkOverlap(x, y) && !isNearContent(x, y) && !isOverlappingCard(x, y) && !isInHeroSection(x, y)) break;
       
     } while (attempts < maxAttempts);
     
@@ -160,7 +178,7 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
         x = Math.random() * (containerSection.offsetWidth - 80);
         y = Math.random() * (containerSection.offsetHeight - 25);
         
-        if (!checkOverlap(x, y) && !isNearContent(x, y) && !isOverlappingCard(x, y)) {
+        if (!checkOverlap(x, y) && !isNearContent(x, y) && !isOverlappingCard(x, y) && !isInHeroSection(x, y)) {
           foundGoodPosition = true;
           break;
         }
@@ -202,14 +220,22 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
     
     // Add to container section
     containerSection.appendChild(word);
-    globalActiveWords.push(word);
+    if (isExperimentPage) {
+      experimentActiveWords.current.push(word);
+    } else {
+      globalActiveWords.push(word);
+    }
     activeWordsRef.current.push(word);
     
     // Remove word and style after animation completes
     setTimeout(() => {
       if (word.parentNode) {
         word.parentNode.removeChild(word);
-        globalActiveWords = globalActiveWords.filter(w => w !== word);
+        if (isExperimentPage) {
+          experimentActiveWords.current = experimentActiveWords.current.filter(w => w !== word);
+        } else {
+          globalActiveWords = globalActiveWords.filter(w => w !== word);
+        }
         activeWordsRef.current = activeWordsRef.current.filter(w => w !== word);
         
         // Remove the unique style element
@@ -247,45 +273,71 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
 
   // Function to initialize background words (start immediately)
   const initBackgroundWords = () => {
-    // Only initialize once globally
-    if (isInitialized) return;
-    isInitialized = true;
-    
-    // Load words first, then initialize
-    loadBackgroundWords().then(() => {
-      // Start background words immediately
-      let wordsCreated = 0;
+    if (isExperimentPage) {
+      // Handle experiment page separately
+      if (experimentInitialized.current) return;
+      experimentInitialized.current = true;
       
-      function createInitialWord() {
-        if (wordsCreated < maxWords) {
-          // Create word with random start stage to avoid synchronized lifecycles
-          createBackgroundWord(true);
-          wordsCreated++;
-          
-          // Create words quickly to fill screen
-          const randomDelay = 20 + Math.random() * 100; // 0.02 to 0.12 seconds
-          const timeoutId = setTimeout(createInitialWord, randomDelay);
-          globalTimeouts.push(timeoutId);
-        } else {
-          // All initial words created, start the continuous replacement system
-          const intervalId = setInterval(() => {
-            // Replace words that have finished their lifecycle
-            if (globalActiveWords.length < maxWords) {
-              // Random timing to break up waves
-              const randomGap = Math.random() * 1000; // 0 to 1 seconds random gap
-              const timeoutId = setTimeout(() => {
-                createBackgroundWord(true);
-              }, randomGap);
-              globalTimeouts.push(timeoutId);
-            }
-          }, 50); // Check frequently for better distribution
-          globalIntervals.push(intervalId);
+      loadBackgroundWords().then(() => {
+        let wordsCreated = 0;
+        
+        function createInitialWord() {
+          if (wordsCreated < maxWords) {
+            createBackgroundWord(true);
+            wordsCreated++;
+            
+            const randomDelay = 20 + Math.random() * 100;
+            const timeoutId = setTimeout(createInitialWord, randomDelay);
+            experimentTimeouts.current.push(timeoutId);
+          } else {
+            const intervalId = setInterval(() => {
+              if (experimentActiveWords.current.length < maxWords) {
+                const randomGap = Math.random() * 1000;
+                const timeoutId = setTimeout(() => {
+                  createBackgroundWord(true);
+                }, randomGap);
+                experimentTimeouts.current.push(timeoutId);
+              }
+            }, 50);
+            experimentIntervals.current.push(intervalId);
+          }
         }
-      }
+        
+        createInitialWord();
+      });
+    } else {
+      // Handle main page with global state
+      if (isInitialized) return;
+      isInitialized = true;
       
-      // Start creating words immediately
-      createInitialWord();
-    });
+      loadBackgroundWords().then(() => {
+        let wordsCreated = 0;
+        
+        function createInitialWord() {
+          if (wordsCreated < maxWords) {
+            createBackgroundWord(true);
+            wordsCreated++;
+            
+            const randomDelay = 20 + Math.random() * 100;
+            const timeoutId = setTimeout(createInitialWord, randomDelay);
+            globalTimeouts.push(timeoutId);
+          } else {
+            const intervalId = setInterval(() => {
+              if (globalActiveWords.length < maxWords) {
+                const randomGap = Math.random() * 1000;
+                const timeoutId = setTimeout(() => {
+                  createBackgroundWord(true);
+                }, randomGap);
+                globalTimeouts.push(timeoutId);
+              }
+            }, 50);
+            globalIntervals.push(intervalId);
+          }
+        }
+        
+        createInitialWord();
+      });
+    }
   };
 
   useEffect(() => {
@@ -298,10 +350,23 @@ const BackgroundWords = ({ theme, containerId = 'hero' }) => {
         if (word.parentNode) {
           word.parentNode.removeChild(word);
         }
-        // Remove from global array too
-        globalActiveWords = globalActiveWords.filter(w => w !== word);
+        // Remove from appropriate array
+        if (isExperimentPage) {
+          experimentActiveWords.current = experimentActiveWords.current.filter(w => w !== word);
+        } else {
+          globalActiveWords = globalActiveWords.filter(w => w !== word);
+        }
       });
       activeWordsRef.current = [];
+      
+      // Clear experiment-specific timeouts and intervals
+      if (isExperimentPage) {
+        experimentTimeouts.current.forEach(timeoutId => clearTimeout(timeoutId));
+        experimentIntervals.current.forEach(intervalId => clearInterval(intervalId));
+        experimentTimeouts.current = [];
+        experimentIntervals.current = [];
+        experimentInitialized.current = false;
+      }
     };
   }, [containerId]); // Re-run when containerId changes
 

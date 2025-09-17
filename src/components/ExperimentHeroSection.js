@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const HeroSection = ({ theme, onInfoClick }) => {
+const ExperimentHeroSection = ({ theme, onBack }) => {
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
 
@@ -24,7 +24,7 @@ const HeroSection = ({ theme, onInfoClick }) => {
   useEffect(() => {
     // Scroll-based hero animation (exactly like original)
     const handleScroll = () => {
-      const heroSection = document.getElementById('hero');
+      const heroSection = document.getElementById('experiment-hero');
       if (!heroSection) return;
 
       const scrollY = window.scrollY;
@@ -67,41 +67,39 @@ const HeroSection = ({ theme, onInfoClick }) => {
           }
         }
       }
-      
-      // Info icon stays visible (removed scroll-based opacity changes)
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleInfoClick = (e) => {
+  const handleBackClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     
     // Scroll to top before transitioning
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    if (onInfoClick) {
-      onInfoClick();
+    if (onBack) {
+      onBack();
     }
   };
 
   return (
-    <section id="hero" className="hero-section">
+    <section id="experiment-hero" className="hero-section">
       <div className="hero-content">
         <div className="name-container">
-          <h1 className="first-name" ref={firstNameRef}>Namra</h1>
-          <h1 className="last-name" ref={lastNameRef}>Shah</h1>
+          <h1 className="first-name" ref={firstNameRef}>Experiment</h1>
+          <h1 className="last-name" ref={lastNameRef}>Space</h1>
         </div>
       </div>
       
-      {/* Info Icon */}
-      <div className="info-icon" id="info-icon" onClick={handleInfoClick}>
-        <span className="info-text">i</span>
+      {/* Back Icon - same style as info icon but with left arrow */}
+      <div className="info-icon back-icon" onClick={handleBackClick}>
+        <span className="info-text">‹</span>
       </div>
     </section>
   );
 };
 
-export default HeroSection;
+export default ExperimentHeroSection;

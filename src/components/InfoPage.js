@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import BackgroundWords from './BackgroundWords';
+import ExperimentHeroSection from './ExperimentHeroSection';
+import MusicSection from './MusicSection';
+import PicturesSection from './PicturesSection';
+import InsightsSection from './InsightsSection';
 
 const InfoPage = ({ theme, toggleTheme, onBack }) => {
+  const [activeSection, setActiveSection] = useState('experiment-hero');
+
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+  };
+
   const handleChatClick = (e) => {
     e.preventDefault();
     if (onBack) {
@@ -26,33 +36,42 @@ const InfoPage = ({ theme, toggleTheme, onBack }) => {
 
   return (
     <div id="info-page" className="info-page">
-      <BackgroundWords theme={theme} containerId="info-page" />
       <Navbar 
         theme={theme} 
         toggleTheme={toggleTheme} 
-        activeSection="info"
-        onSectionChange={() => {}}
-        hideNavLinks={true}
+        activeSection={activeSection}
+        onSectionChange={handleSectionChange}
+        hideNavLinks={false}
+        experimentMode={true}
       />
-      <div className="info-page-content">
-        <div className="info-page-card">
-          <div className="info-page-body">
-            <h1>Information Page</h1>
-            <p>This is a blank page with inverted theme.</p>
-            <p>
-              Fun Fact: All words visible on this page are actual topics I have recently been thinking about. If you are interested in any of these, let's{' '}
-              <a href="#contact" className="link-underline" onClick={handleChatClick}>chat</a>.
-              And if you find yourself on there, Be Proud!
-            </p>
-          </div>
-        </div>
-      </div>
       
-      {/* Back Icon - same style as info icon but with left arrow */}
-      <div className="info-icon back-icon" onClick={onBack}>
-        <span className="info-text">‹</span>
-      </div>
+      <ExperimentHeroSection theme={theme} onBack={onBack} />
+      
+      <main className="main-content">
+        <section id="background-words-section" className="section">
+          <BackgroundWords theme={theme} containerId="background-words-section" />
+          <div className="section-content">
+            <div className="info-page-card">
+              <div className="info-page-body">
+                <h1>Thoughts</h1>
+                <p>
+                  Fun Fact: All words visible on this page are actual topics I have recently been thinking about. If you are interested in any of these, let's{' '}
+                  <a href="#contact" className="link-underline" onClick={handleChatClick}>chat</a>.
+                  And if you find yourself here, Be Proud!
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <MusicSection />
+        
+        <PicturesSection />
+        
+        <InsightsSection />
+      </main>
     </div>
   );
 };
+
 export default InfoPage;

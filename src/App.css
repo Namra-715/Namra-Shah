@@ -100,7 +100,7 @@ p {
     width: 100%;
     background: var(--nav-bg);
     backdrop-filter: blur(10px);
-    z-index: 1000;
+    z-index: 100000; /* Higher than card z-index */
     transition: background 0.5s ease;
 }
 
@@ -263,7 +263,7 @@ input:checked + .slider:before {
 
 /* Info Icon */
 .info-icon {
-    position: absolute;
+    position: fixed;
     bottom: 2rem;
     left: 2rem;
     width: 24px;
@@ -912,7 +912,7 @@ input:checked + .slider:before {
 .info-page-card {
     background: var(--bg-color) !important;
     padding: 2rem;
-    margin: 5rem auto 2rem auto; /* Slightly lower */
+    margin: 3rem auto 2rem auto; /* Moved up from 5rem */
     max-width: 600px;
     position: relative;
     z-index: 99999 !important; /* Maximum z-index to ensure it's above everything */
@@ -977,7 +977,7 @@ input:checked + .slider:before {
 
 /* Back Icon - same style as info icon */
 .back-icon {
-    position: absolute;
+    position: fixed;
     bottom: 2rem;
     left: 2rem;
     width: 28px;
@@ -1078,6 +1078,233 @@ html, body { overflow-x: hidden; max-width: 100%; }
 }
 .link-underline:hover {
   opacity: 0.85;
+}
+
+/* Ensure background-words-section has relative positioning for absolute word positioning */
+#background-words-section {
+    position: relative;
+    align-items: flex-start; /* Align content to top instead of center */
+    padding-top: 6rem; /* Increased padding to move content down more */
+}
+.work-progress-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.progress-card {
+    background: rgba(255, 255, 255, 0.05); /* Reduced background opacity only */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.progress-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Even more reduced shadow effect */
+    transform: translateY(-5px);
+}
+
+.progress-card h3 {
+    color: var(--text-primary);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.progress-card p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.progress-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-bar {
+    width: 200px;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    width: 65%;
+    height: 100%;
+    background: var(--text-primary); /* Use theme-aware color */
+    border-radius: 4px;
+    animation: progressPulse 2s ease-in-out infinite;
+}
+
+.progress-text {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+@keyframes progressPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Experiment page specific styles */
+#experiment-hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+#experiment-hero .hero-content {
+    text-align: center;
+    z-index: 10;
+}
+
+#experiment-hero .name-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#experiment-hero .first-name,
+#experiment-hero .last-name {
+    font-size: 4rem;
+    font-weight: 300;
+    color: var(--text-primary);
+    margin: 0;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    #experiment-hero .first-name,
+    #experiment-hero .last-name {
+        font-size: 2.5rem;
+    }
+    
+    /* Experiment page sections responsive */
+    #background-words-section {
+        padding-top: 4rem; /* Reduce padding on mobile */
+    }
+    
+    .info-page-card {
+        margin: 2rem auto 1rem auto; /* Reduce margins on mobile */
+        padding: 1.5rem; /* Reduce padding on mobile */
+        max-width: 90%; /* Better mobile width */
+    }
+    
+    .progress-card {
+        padding: 2rem 1.5rem;
+        margin: 0 1rem;
+        max-width: 90%; /* Better mobile width */
+    }
+    
+    .progress-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .progress-card p {
+        font-size: 1rem;
+    }
+    
+    .progress-bar {
+        width: 150px;
+    }
+    
+    /* Ensure experiment page sections have proper mobile spacing */
+    .section {
+        padding: 1rem 0.5rem; /* Reduce section padding on mobile */
+    }
+    
+    .section-content {
+        padding: 0 1rem; /* Add horizontal padding for mobile */
+    }
+}
+
+/* Additional responsive styles for very small screens */
+@media (max-width: 480px) {
+    #experiment-hero .first-name,
+    #experiment-hero .last-name {
+        font-size: 2rem; /* Even smaller on very small screens */
+    }
+    
+    #background-words-section {
+        padding-top: 3rem; /* Further reduce padding */
+    }
+    
+    .info-page-card {
+        margin: 1.5rem auto 1rem auto;
+        padding: 1rem;
+        max-width: 95%; /* Almost full width on very small screens */
+    }
+    
+    .progress-card {
+        padding: 1.5rem 1rem;
+        margin: 0 0.5rem;
+        max-width: 95%;
+    }
+    
+    .progress-card h3 {
+        font-size: 1.3rem;
+    }
+    
+    .progress-card p {
+        font-size: 0.9rem;
+    }
+    
+    .progress-bar {
+        width: 120px; /* Smaller progress bar */
+    }
+    
+    .section {
+        padding: 0.5rem 0.25rem; /* Minimal padding */
+    }
+    
+    .section-content {
+        padding: 0 0.5rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+    #experiment-hero .first-name,
+    #experiment-hero .last-name {
+        font-size: 1.8rem;
+    }
+    
+    .info-page-card {
+        padding: 0.8rem;
+        margin: 1rem auto 0.5rem auto;
+    }
+    
+    .progress-card {
+        padding: 1rem 0.8rem;
+        margin: 0 0.25rem;
+    }
+    
+    .progress-card h3 {
+        font-size: 1.2rem;
+    }
+    
+    .progress-card p {
+        font-size: 0.85rem;
+    }
+    
+    .progress-bar {
+        width: 100px;
+    }
 }
 
 

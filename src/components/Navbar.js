@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLinks = false }) => {
+const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLinks = false, experimentMode = false }) => {
   const navRef = useRef(null);
   const underlineRef = useRef(null);
 
@@ -8,29 +8,56 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLin
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight / 2;
       
-      // Check if we're in the hero section (before any navigation sections)
-      const heroSection = document.getElementById('hero');
-      if (heroSection) {
-        const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
-        
-        if (scrollPosition < heroBottom) {
-          // We're in the hero section, remove active class from all links
-          onSectionChange('hero');
-          return;
-        }
-      }
-      
-      // Check other sections
-      const sections = ['about', 'experience', 'projects', 'contact'];
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = document.getElementById(sections[i]);
-        if (section) {
-          const sectionTop = section.offsetTop;
-          const sectionHeight = section.offsetHeight;
+      if (experimentMode) {
+        // Handle experiment page sections
+        const heroSection = document.getElementById('experiment-hero');
+        if (heroSection) {
+          const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
           
-          if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-            onSectionChange(sections[i]);
-            break;
+          if (scrollPosition < heroBottom) {
+            onSectionChange('experiment-hero');
+            return;
+          }
+        }
+        
+        // Check experiment sections
+        const sections = ['background-words-section', 'work-in-progress', 'pictures', 'insights'];
+        for (let i = sections.length - 1; i >= 0; i--) {
+          const section = document.getElementById(sections[i]);
+          if (section) {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+              onSectionChange(sections[i]);
+              break;
+            }
+          }
+        }
+      } else {
+        // Handle main page sections
+        const heroSection = document.getElementById('hero');
+        if (heroSection) {
+          const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+          
+          if (scrollPosition < heroBottom) {
+            onSectionChange('hero');
+            return;
+          }
+        }
+        
+        // Check other sections
+        const sections = ['about', 'experience', 'projects', 'contact'];
+        for (let i = sections.length - 1; i >= 0; i--) {
+          const section = document.getElementById(sections[i]);
+          if (section) {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+              onSectionChange(sections[i]);
+              break;
+            }
           }
         }
       }
@@ -92,10 +119,21 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLin
     if (targetSection) {
       // Use different offsets for different sections
       let offset = 80; // default offset
-      if (section === 'about') {
-        offset = 65;
-      } else if (section === 'contact') {
-        offset = 0; // scroll to very bottom of contact section
+      
+      if (experimentMode) {
+        // Experiment page sections - consistent scroll offset except insights
+        if (section === 'insights') {
+          offset = 0; // Scroll to very bottom with no further scroll possible
+        } else {
+          offset = 30; // Same offset for other experiment sections
+        }
+      } else {
+        // Main page sections
+        if (section === 'about') {
+          offset = 65;
+        } else if (section === 'contact') {
+          offset = 0; // scroll to very bottom of contact section
+        }
       }
       
       const targetPosition = targetSection.offsetTop - offset;
@@ -111,46 +149,95 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLin
       <div className="nav-container">
         {!hideNavLinks && (
           <ul className="nav-menu">
-            <li className="nav-item">
-              <a 
-                href="#about" 
-                className={`nav-link ${activeSection === 'about' ? 'active' : ''}`} 
-                data-section="about"
-                onClick={(e) => handleNavClick(e, 'about')}
-              >
-                About Me
-              </a>
-            </li>
-            <li className="nav-item">
-              <a 
-                href="#experience" 
-                className={`nav-link ${activeSection === 'experience' ? 'active' : ''}`} 
-                data-section="experience"
-                onClick={(e) => handleNavClick(e, 'experience')}
-              >
-                Experience
-              </a>
-            </li>
-            <li className="nav-item">
-              <a 
-                href="#projects" 
-                className={`nav-link ${activeSection === 'projects' ? 'active' : ''}`} 
-                data-section="projects"
-                onClick={(e) => handleNavClick(e, 'projects')}
-              >
-                Projects
-              </a>
-            </li>
-            <li className="nav-item">
-              <a 
-                href="#contact" 
-                className={`nav-link ${activeSection === 'contact' ? 'active' : ''}`} 
-                data-section="contact"
-                onClick={(e) => handleNavClick(e, 'contact')}
-              >
-                Contact Me
-              </a>
-            </li>
+            {experimentMode ? (
+              // Experiment page navigation
+              <>
+                <li className="nav-item">
+                  <a 
+                    href="#background-words-section" 
+                    className={`nav-link ${activeSection === 'background-words-section' ? 'active' : ''}`} 
+                    data-section="background-words-section"
+                    onClick={(e) => handleNavClick(e, 'background-words-section')}
+                  >
+                    Thoughts
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a 
+                    href="#work-in-progress" 
+                    className={`nav-link ${activeSection === 'work-in-progress' ? 'active' : ''}`} 
+                    data-section="work-in-progress"
+                    onClick={(e) => handleNavClick(e, 'work-in-progress')}
+                  >
+                    Music
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a 
+                    href="#pictures" 
+                    className={`nav-link ${activeSection === 'pictures' ? 'active' : ''}`} 
+                    data-section="pictures"
+                    onClick={(e) => handleNavClick(e, 'pictures')}
+                  >
+                    Pictures
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a 
+                    href="#insights" 
+                    className={`nav-link ${activeSection === 'insights' ? 'active' : ''}`} 
+                    data-section="insights"
+                    onClick={(e) => handleNavClick(e, 'insights')}
+                  >
+                    Insights
+                  </a>
+                </li>
+              </>
+            ) : (
+              // Main page navigation
+              <>
+                <li className="nav-item">
+                  <a 
+                    href="#about" 
+                    className={`nav-link ${activeSection === 'about' ? 'active' : ''}`} 
+                    data-section="about"
+                    onClick={(e) => handleNavClick(e, 'about')}
+                  >
+                    About Me
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a 
+                    href="#experience" 
+                    className={`nav-link ${activeSection === 'experience' ? 'active' : ''}`} 
+                    data-section="experience"
+                    onClick={(e) => handleNavClick(e, 'experience')}
+                  >
+                    Experience
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a 
+                    href="#projects" 
+                    className={`nav-link ${activeSection === 'projects' ? 'active' : ''}`} 
+                    data-section="projects"
+                    onClick={(e) => handleNavClick(e, 'projects')}
+                  >
+                    Projects
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a 
+                    href="#contact" 
+                    className={`nav-link ${activeSection === 'contact' ? 'active' : ''}`} 
+                    data-section="contact"
+                    onClick={(e) => handleNavClick(e, 'contact')}
+                  >
+                    Contact Me
+                  </a>
+                </li>
+              </>
+            )}
           </ul>
         )}
         <div className="theme-toggle">
