@@ -8,7 +8,7 @@ const MusicSection = () => {
         <div className="work-progress-content">
           <div className="progress-card">
             <h3>What's your song rec?</h3>
-            <p>This section is currently under development because I am busy listening to new artists!</p>
+            <p>This section is currently under development because I am busy listening to new songs and artists!</p>
             <div className="progress-indicator">
               <div className="progress-bar">
                 <div className="progress-fill"></div>

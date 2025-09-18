@@ -8,7 +8,7 @@ const PicturesSection = () => {
         <div className="work-progress-content">
           <div className="progress-card">
             <h3>Storage Full!</h3>
-            <p>I am eager to travel so I can click more photos to add here!</p>
+            <p>I am eager to travel more so I can click photos to add here.</p>
             <div className="progress-indicator">
               <div className="progress-bar">
                 <div className="progress-fill"></div>
