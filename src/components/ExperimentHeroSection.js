@@ -58,12 +58,20 @@ const ExperimentHeroSection = ({ theme, onBack }) => {
             const opacity = 1 - scrollProgress;
             firstName.style.setProperty('opacity', opacity, 'important');
             lastName.style.setProperty('opacity', opacity, 'important');
+            
+            // Ensure font-size is not overridden by JavaScript
+            firstName.style.removeProperty('font-size');
+            lastName.style.removeProperty('font-size');
           } else {
             // When back at the top, reset names to center position
             firstName.style.setProperty('transform', 'translateX(0)', 'important');
             lastName.style.setProperty('transform', 'translateX(0)', 'important');
             firstName.style.setProperty('opacity', '1', 'important');
             lastName.style.setProperty('opacity', '1', 'important');
+            
+            // Ensure font-size is not overridden by JavaScript
+            firstName.style.removeProperty('font-size');
+            lastName.style.removeProperty('font-size');
           }
         }
       }

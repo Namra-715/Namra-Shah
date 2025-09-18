@@ -1361,9 +1361,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-    #experiment-hero .first-name,
-    #experiment-hero .last-name {
-        font-size: 2.5rem;
+    #experiment-hero .hero-content .name-container .first-name,
+    #experiment-hero .hero-content .name-container .last-name {
+        font-size: 3.2rem !important;
     }
     
     .warning-marquee {
@@ -1437,9 +1437,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
 
 /* Additional responsive styles for very small screens */
 @media (max-width: 480px) {
-    #experiment-hero .first-name,
-    #experiment-hero .last-name {
-        font-size: 2rem; /* Even smaller on very small screens */
+    #experiment-hero .hero-content .name-container .first-name,
+    #experiment-hero .hero-content .name-container .last-name {
+        font-size: 3rem !important;
     }
     
     .warning-marquee {
@@ -1511,9 +1511,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
 
 /* Extra small screens */
 @media (max-width: 360px) {
-    #experiment-hero .first-name,
-    #experiment-hero .last-name {
-        font-size: 1.8rem;
+    #experiment-hero .hero-content .name-container .first-name,
+    #experiment-hero .hero-content .name-container .last-name {
+        font-size: 2.8rem !important;
     }
     
     .info-page-card {
