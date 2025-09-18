@@ -87,6 +87,34 @@ const ExperimentHeroSection = ({ theme, onBack }) => {
 
   return (
     <section id="experiment-hero" className="hero-section">
+      {/* Warning Marquee */}
+      <div className="warning-marquee">
+        <div className="marquee-content">
+          <span>Caution : This section of the website is currently under R&D, you might stumble across something crazy !</span>
+        </div>
+      </div>
+      
+      {/* Vertical Warning Marquee */}
+      <div className="vertical-warning-marquee">
+        <div className="vertical-marquee-content">
+          <span>Caution : This section of the website is currently under R&D, you might stumble across something crazy !</span>
+        </div>
+      </div>
+      
+      {/* Top Right to Bottom Marquee */}
+      <div className="top-right-marquee">
+        <div className="top-right-marquee-content">
+          <span>Caution : This section of the website is currently under R&D, you might stumble across something crazy !</span>
+        </div>
+      </div>
+      
+      {/* Bottom Left to Right Marquee */}
+      <div className="bottom-left-marquee">
+        <div className="bottom-left-marquee-content">
+          <span>Caution : This section of the website is currently under R&D, you might stumble across something crazy !</span>
+        </div>
+      </div>
+      
       <div className="hero-content">
         <div className="name-container">
           <h1 className="first-name" ref={firstNameRef}>Experiment</h1>

@@ -1188,10 +1188,199 @@ html, body { overflow-x: hidden; max-width: 100%; }
     transition: all 0.3s ease;
 }
 
+/* Warning Marquee Styles */
+.warning-marquee {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background: transparent;
+    overflow: hidden;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+}
+
+.marquee-content {
+    display: flex;
+    animation: marquee-scroll 15s linear infinite;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.marquee-content span {
+    margin-right: 2rem;
+    flex-shrink: 0;
+}
+
+@keyframes marquee-scroll {
+    0% {
+        transform: translateX(100vw);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* Vertical Warning Marquee Styles */
+.vertical-warning-marquee {
+    position: absolute;
+    left: 0px;
+    top: 80px;
+    width: 200px;
+    height: calc(100vh - 80px);
+    background: transparent;
+    overflow: hidden;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.vertical-marquee-content {
+    display: flex;
+    flex-direction: row;
+    animation: vertical-marquee-scroll 12s linear infinite;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+
+.vertical-marquee-content span {
+    margin-left: 2rem;
+    flex-shrink: 0;
+}
+
+@keyframes vertical-marquee-scroll {
+    0% {
+        transform: translateY(100vh);
+    }
+    100% {
+        transform: translateY(-100%);
+    }
+}
+
+/* Top Right to Bottom Marquee Styles */
+.top-right-marquee {
+    position: absolute;
+    right: 20px;
+    top: 80px;
+    width: 200px;
+    height: calc(100vh - 80px);
+    background: transparent;
+    overflow: hidden;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+}
+
+.top-right-marquee-content {
+    display: flex;
+    flex-direction: row;
+    animation: top-right-marquee-scroll 12s linear infinite;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+}
+
+.top-right-marquee-content span {
+    margin-left: 2rem;
+    flex-shrink: 0;
+}
+
+@keyframes top-right-marquee-scroll {
+    0% {
+        transform: translateY(-100vh);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+/* Bottom Left to Right Marquee Styles */
+.bottom-left-marquee {
+    position: absolute;
+    left: 0px;
+    bottom: 20px;
+    width: 100vw;
+    height: 30px;
+    background: transparent;
+    overflow: hidden;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.bottom-left-marquee-content {
+    display: flex;
+    animation: bottom-left-marquee-scroll 12s linear infinite;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.bottom-left-marquee-content span {
+    margin-right: 2rem;
+    flex-shrink: 0;
+}
+
+@keyframes bottom-left-marquee-scroll {
+    0% {
+        transform: translateX(-100vw);
+    }
+    100% {
+        transform: translateX(100vw);
+    }
+}
+
 @media (max-width: 768px) {
     #experiment-hero .first-name,
     #experiment-hero .last-name {
         font-size: 2.5rem;
+    }
+    
+    .warning-marquee {
+        top: 100px;
+        height: 25px;
+    }
+    
+    .marquee-content {
+        font-size: 0.8rem;
+        animation: marquee-scroll 12s linear infinite;
+    }
+    
+    .marquee-content span {
+        margin-right: 1.5rem;
+    }
+    
+    .vertical-warning-marquee {
+        top: 100px;
+        height: calc(100vh - 100px);
+        width: 150px;
+        left: 0px;
+    }
+    
+    .vertical-marquee-content {
+        font-size: 0.8rem;
+        animation: vertical-marquee-scroll 10s linear infinite;
+    }
+    
+    .vertical-marquee-content span {
+        margin-left: 1.5rem;
     }
     
     /* Experiment page sections responsive */
@@ -1238,6 +1427,36 @@ html, body { overflow-x: hidden; max-width: 100%; }
     #experiment-hero .first-name,
     #experiment-hero .last-name {
         font-size: 2rem; /* Even smaller on very small screens */
+    }
+    
+    .warning-marquee {
+        top: 120px;
+        height: 20px;
+    }
+    
+    .marquee-content {
+        font-size: 0.7rem;
+        animation: marquee-scroll 10s linear infinite;
+    }
+    
+    .marquee-content span {
+        margin-right: 1rem;
+    }
+    
+    .vertical-warning-marquee {
+        top: 120px;
+        height: calc(100vh - 120px);
+        width: 120px;
+        left: 0px;
+    }
+    
+    .vertical-marquee-content {
+        font-size: 0.7rem;
+        animation: vertical-marquee-scroll 8s linear infinite;
+    }
+    
+    .vertical-marquee-content span {
+        margin-left: 1rem;
     }
     
     #background-words-section {
