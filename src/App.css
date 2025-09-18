@@ -34,7 +34,7 @@
     --tooltip-bg: rgba(255, 255, 255, 0.95);
     --tooltip-text: #000000;
     --project-arrow-color: #000000;
-    --info-circle-bg: rgba(0, 0, 0, 0.9);
+    --info-circle-bg: rgba(0, 0, 0, 1);
 }
 
 /* Reset and base styles */
@@ -266,8 +266,8 @@ input:checked + .slider:before {
     position: fixed;
     bottom: 2rem;
     left: 2rem;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -275,9 +275,10 @@ input:checked + .slider:before {
     transition: all 0.3s ease;
     z-index: 100;
     animation: attentionJump 2s ease-in-out infinite;
-    background: var(--info-circle-bg);
+    background: var(--info-circle-bg) !important;
     border-radius: 50%;
     padding: 2px;
+    opacity: 1 !important;
 }
 
 /* Attention-grabbing jump animation */
@@ -297,8 +298,8 @@ input:checked + .slider:before {
 .info-icon::before {
     content: '';
     position: absolute;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: transparent;
     cursor: pointer;
@@ -980,8 +981,8 @@ input:checked + .slider:before {
     position: fixed;
     bottom: 2rem;
     left: 2rem;
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -989,9 +990,10 @@ input:checked + .slider:before {
     transition: all 0.3s ease;
     z-index: 100;
     animation: attentionJump 2s ease-in-out infinite;
-    background: var(--info-circle-bg);
+    background: var(--info-circle-bg) !important;
     border-radius: 50%;
-    padding: 3px;
+    padding: 2px;
+    opacity: 1 !important;
 }
 
 .back-icon .info-text {
@@ -999,6 +1001,17 @@ input:checked + .slider:before {
     font-weight: 700;
     font-size: 18px;
     user-select: none;
+}
+
+/* Camouflaged clickable circle area for back button */
+.back-icon::before {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
 }
 
 .back-icon:hover {
