@@ -76,7 +76,7 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLin
 
     window.addEventListener('scroll', throttledScrollHandler);
     return () => window.removeEventListener('scroll', throttledScrollHandler);
-  }, [onSectionChange]);
+  }, [onSectionChange, experimentMode]);
 
   // Update underline position (exactly like original)
   useEffect(() => {
@@ -119,6 +119,8 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLin
     if (targetSection) {
       // Use different offsets for different sections
       let offset = 80; // default offset
+      const isMobile = window.innerWidth <= 768;
+      const isIOS = /iP(ad|hone|od)/.test(navigator.platform) || (/Mac/.test(navigator.platform) && 'ontouchend' in document);
       
       if (experimentMode) {
         // Experiment page sections - consistent scroll offset except insights
@@ -132,10 +134,26 @@ const Navbar = ({ theme, toggleTheme, activeSection, onSectionChange, hideNavLin
         if (section === 'about') {
           offset = 65;
         } else if (section === 'contact') {
-          offset = 0; // scroll to very bottom of contact section
+          // Scroll specifically to the contact title for precise alignment
+          const titleEl = targetSection.querySelector('.section-title');
+          const baseTop = titleEl
+            ? (titleEl.getBoundingClientRect().top + window.pageYOffset)
+            : targetSection.offsetTop;
+
+          // Smaller offsets to reduce extra spacing beneath navbar/toolbar
+          if (isMobile && isIOS) {
+            offset = 70;
+          } else if (isMobile) {
+            offset = 60;
+          } else {
+            offset = 50;
+          }
+
+          const targetPosition = baseTop - offset;
+          window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+          return;
         }
       }
-      
       const targetPosition = targetSection.offsetTop - offset;
       window.scrollTo({
         top: targetPosition,
