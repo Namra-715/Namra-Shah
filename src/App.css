@@ -711,12 +711,21 @@ input:checked + .slider:before {
     padding: 0.5rem 0;
     border: none;
     border-bottom: 1px solid var(--text-secondary);
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
     background: transparent;
     color: var(--text-primary);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.9rem;
     font-weight: 300;
     transition: border-bottom-color 0.3s ease;
+    border-radius: 0; /* prevent curved corners on iOS */
+    -webkit-border-radius: 0;
+    appearance: none;
+    -webkit-appearance: none; /* remove iOS inner shadow/borders */
+    box-shadow: none;
+    background-clip: padding-box;
 }
 
 .form-group input:focus,
